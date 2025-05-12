@@ -1,24 +1,25 @@
 import { SCHEDULE_DIRECTIONS, SCHEDULE_USER_TYPES } from "../../../constants";
 import { ISchedule } from "./schedule.interface";
 import ScheduleModel from "./schedule.model";
+import ApiError from "../../../errors/ApiError";
 
-const create = async (data: ISchedule) => {
-  return await ScheduleModel.create(data);
+const createSchedule = async (data: ISchedule) => {
+  const schedule = await ScheduleModel.create(data);
+  return schedule;
 };
 
 const getAllSchedules = async () => {
   return await ScheduleModel.find();
 };
 
-const getAllSchedulesByRoute = async (routeId: string, scheduleMode: string, day: string) => {
+const getSchedulesByRoute = async (routeId: string, scheduleMode: string, day: string) => {
   const schedules = await ScheduleModel.find({
     routeId,
     mode: scheduleMode,
     operatingDays: day,
   });
 
-  // Group schedules into the required format
-  const formattedSchedules = {
+  const groupedSchedules = {
     from_campus: {
       student: [] as ISchedule[],
       employee: [] as ISchedule[],
@@ -29,36 +30,49 @@ const getAllSchedulesByRoute = async (routeId: string, scheduleMode: string, day
     },
   };
 
-  // Populate the formattedSchedules object
-  schedules.forEach((schedule) => {
-    if (schedule.direction === SCHEDULE_DIRECTIONS.FROM_CAMPUS) {
-      if (schedule.userType === SCHEDULE_USER_TYPES.STUDENT) {
-        formattedSchedules.from_campus.student.push(schedule);
-      } else if (schedule.userType === SCHEDULE_USER_TYPES.EMPLOYEE) {
-        formattedSchedules.from_campus.employee.push(schedule);
-      }
-    } else if (schedule.direction === SCHEDULE_DIRECTIONS.TO_CAMPUS) {
-      if (schedule.userType === SCHEDULE_USER_TYPES.STUDENT) {
-        formattedSchedules.to_campus.student.push(schedule);
-      } else if (schedule.userType === SCHEDULE_USER_TYPES.EMPLOYEE) {
-        formattedSchedules.to_campus.employee.push(schedule);
-      }
-    }
-  });
+  for (const schedule of schedules) {
+    const directionKey = schedule.direction === SCHEDULE_DIRECTIONS.FROM_CAMPUS ? "from_campus" : "to_campus";
+    const userTypeKey = schedule.userType === SCHEDULE_USER_TYPES.STUDENT ? "student" : "employee";
 
-  // Sorting function to sort schedules by time (ascending order)
+    groupedSchedules[directionKey][userTypeKey].push(schedule);
+  }
+
   const sortByTime = (a: ISchedule, b: ISchedule) => a.time.localeCompare(b.time);
 
-  formattedSchedules.from_campus.student.sort(sortByTime);
-  formattedSchedules.from_campus.employee.sort(sortByTime);
-  formattedSchedules.to_campus.student.sort(sortByTime);
-  formattedSchedules.to_campus.employee.sort(sortByTime);
+  Object.values(groupedSchedules).forEach((group) => {
+    group.student.sort(sortByTime);
+    group.employee.sort(sortByTime);
+  });
 
-  return formattedSchedules;
+  return groupedSchedules;
+};
+
+const updateSchedule = async (id: string, data: ISchedule) => {
+  const updated = await ScheduleModel.findByIdAndUpdate(id, data, {
+    new: true,
+  });
+
+  if (!updated) {
+    throw ApiError.notFound("Schedule not found");
+  }
+
+  return updated;
+};
+
+const deleteSchedule = async (id: string) => {
+  const deleted = await ScheduleModel.findByIdAndDelete(id);
+
+  if (!deleted) {
+    throw ApiError.notFound("Schedule not found");
+  }
+
+  return deleted;
 };
 
 export const ScheduleService = {
-  create,
+  createSchedule,
   getAllSchedules,
-  getAllSchedulesByRoute,
+  getSchedulesByRoute,
+  updateSchedule,
+  deleteSchedule,
 };
