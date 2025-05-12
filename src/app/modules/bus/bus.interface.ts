@@ -1,11 +1,11 @@
-import { Schema } from "mongoose";
+import { Types } from "mongoose";
 import { BUS_STATUS, BUS_TYPES } from "../../../constants";
 
 export interface IBus {
-  name: string; 
+  name: string;
   capacity: number;
-  busType: BUS_TYPES.STUDENT | BUS_TYPES.EMPLOYEE;
-  status: BUS_STATUS.ACTIVE | BUS_STATUS.INACTIVE | BUS_STATUS.MAINTENANCE; 
-  assignedRouteId?: Schema.Types.ObjectId; 
-  assignedDriverId?: Schema.Types.ObjectId; 
+  busType: BUS_TYPES; // No need to split, use the enum directly
+  status: BUS_STATUS;
+  assignedRouteId?: Types.ObjectId; // Correct typing for MongoDB _id
+  assignedDriverId?: Types.ObjectId;
 }

@@ -4,32 +4,34 @@ import { IRoute } from "./route.interface";
 
 const routeSchema = new Schema<IRoute>(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     startLocation: { type: String, required: true },
-    endLocation: { type: String, required: true },
-    totalDistance: { type: Number, required: true }, // in kilometers
-    estimatedTime: { type: Number, required: true }, // in minutes
-    wayline: [
-      {
-        latitude: { type: Number, required: true },
-        longitude: { type: Number, required: true },
-      },
-    ],
+    endLocation: { type: String, required: true, unique: true },
+    totalDistance: { type: Number }, // optional
+    estimatedTime: { type: Number }, // optional
+
+    wayline: {
+      type: Schema.Types.Mixed, // replaces invalid `JSON`
+    },
+
     assignedBuses: [
       {
-        number: { type: String, required: false },
+        type: Schema.Types.ObjectId,
+        unique: true,
+        ref: "Bus",
       },
     ],
+
     waypoints: [
       {
-        location: { type: String, required: false },
-        latitude: { type: Number, required: false },
-        longitude: { type: Number, required: false },
+        location: { type: String },
+        latitude: { type: Number },
+        longitude: { type: Number },
         studentDensity: {
           type: String,
           enum: [STUDENT_DENSITY.LOW, STUDENT_DENSITY.MEDIUM, STUDENT_DENSITY.HIGH],
-          required: false,
         },
+        _id: false,
       },
     ],
   },
