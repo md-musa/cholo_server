@@ -1,3 +1,4 @@
+import { TripModel } from "./../trip/trip.model";
 import { Request, Response } from "express";
 import { format, parse } from "date-fns";
 import { StatusCodes } from "http-status-codes";
@@ -10,8 +11,8 @@ import config from "../../../config";
 import { SCHEDULE_OPERATING_DAYS } from "../../../constants";
 
 const createSchedule = async (req: Request, res: Response) => {
+  console.log(req.body.time);
   const data: ISchedule = req.body;
-  data.time = format(parse(data.time, "hh:mm a", new Date()), "HH:mm");
 
   const result = await ScheduleService.createSchedule(data);
 
@@ -61,8 +62,6 @@ const updateSchedule = async (req: Request, res: Response) => {
   if (!id) throw ApiError.badRequest("Schedule ID is required");
 
   const data: ISchedule = req.body;
-  if (data.time) data.time = format(parse(data.time, "hh:mm a", new Date()), "HH:mm");
-
   const result = await ScheduleService.updateSchedule(id, data);
 
   sendResponse(res, {

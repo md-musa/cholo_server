@@ -35,7 +35,6 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
     },
     note: {
       type: String,
-      required: false,
     },
   },
   { timestamps: true }
