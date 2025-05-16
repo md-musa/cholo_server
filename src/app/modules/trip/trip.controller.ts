@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 
 const create = async (req: Request, res: Response) => {
   const tripData: ITrip = req.body;
-  console.log("tripData", tripData);
+  // console.log("tripData", tripData);
   const trip = await TripService.create(tripData);
 
   sendResponse(res, {

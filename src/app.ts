@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(req.url);
+  // console.log(req.url);
   next();
 });
 
@@ -47,21 +47,29 @@ app.use(routeNotFoundError);
 // ---------------------------
 
 export const socketHandler = (socket: any) => {
-  console.log(`🟢 New client connected: ${socket.id}`);
+  // console.log(`🟢 New client connected: ${socket.id}`);
 
   // 1️⃣ User joins a route-specific room
   socket.on(SOCKET_EVENTS.JOIN_ROUTE, (routeId: string) => {
     socket.join(routeId);
     const currUserCnt = io.sockets.adapter.rooms.get(routeId)?.size;
-    console.log(`👥 Client ${socket.id} joined; cnt: ${currUserCnt}`);
+    // console.log(`👥 Client ${socket.id} joined; cnt: ${currUserCnt}`);
   });
 
   // 2️⃣ Bus broadcasts location updates along with user count and host name
   socket.on(SOCKET_EVENTS.BROADCAST_BUS_LOCATION, broadcastLocation);
 
+  // 3️⃣ User leaves the route-specific room
+  socket.on("leave-room", (room: string) => {
+    socket.leave(room);
+    // console.log(`👤 Client ${socket.id} left room ${room}`);
+    // const currUserCnt = io.sockets.adapter.rooms.get(room)?.size;
+    // console.log(`👤 Client ${socket.id} left room ${room}; cnt: ${currUserCnt}`);
+  });
+
   // 4️⃣ Handle disconnection
   socket.on("disconnect", () => {
-    console.log(`🔴 Client disconnected: ${socket.id}`);
+    // console.log(`🔴 Client disconnected: ${socket.id}`);
   });
 };
 

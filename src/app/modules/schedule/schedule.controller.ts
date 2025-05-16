@@ -11,7 +11,7 @@ import config from "../../../config";
 import { SCHEDULE_OPERATING_DAYS } from "../../../constants";
 
 const createSchedule = async (req: Request, res: Response) => {
-  console.log(req.body.time);
+  // console.log(req.body.time);
   const data: ISchedule = req.body;
 
   const result = await ScheduleService.createSchedule(data);
@@ -37,16 +37,13 @@ const getAllSchedules = async (req: Request, res: Response) => {
 
 const getSchedulesByRoute = async (req: Request, res: Response) => {
   let { routeId, day } = req.query;
+  // console.log(day);
 
   if (!routeId) {
     throw ApiError.badRequest("Route ID is required");
   }
 
   const scheduleMode = config.APP_VARIABLES.SCHEDULE_MODE;
-  if (day !== SCHEDULE_OPERATING_DAYS.FRIDAY) {
-    day = SCHEDULE_OPERATING_DAYS.WEEKDAYS;
-  }
-
   const result = await ScheduleService.getSchedulesByRoute(routeId as string, scheduleMode, day as string);
 
   sendResponse(res, {

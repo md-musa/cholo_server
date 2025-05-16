@@ -28,7 +28,7 @@ export const broadcastLocation = async (data: any) => {
 
     io.to(routeId).emit(SOCKET_EVENTS.BUS_LOCATION_UPDATE, res);
 
-    console.log(`📡 Broadcasted bus ${trip.busName} UserCnt: ${currUserCnt}`);
+    // console.log(`📡 Broadcasted bus ${trip.busName} UserCnt: ${currUserCnt}`);
   } catch (error) {
     console.error("❌ Error fetching bus or host data:", error);
   }
