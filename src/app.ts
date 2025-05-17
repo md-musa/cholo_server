@@ -47,13 +47,13 @@ app.use(routeNotFoundError);
 // ---------------------------
 
 export const socketHandler = (socket: any) => {
-  // console.log(`🟢 New client connected: ${socket.id}`);
+  console.log(`🟢 New client connected: ${socket.id}`);
 
   // 1️⃣ User joins a route-specific room
   socket.on(SOCKET_EVENTS.JOIN_ROUTE, (routeId: string) => {
     socket.join(routeId);
     const currUserCnt = io.sockets.adapter.rooms.get(routeId)?.size;
-    // console.log(`👥 Client ${socket.id} joined; cnt: ${currUserCnt}`);
+    console.log(`👥 Client ${socket.id} joined; cnt: ${currUserCnt}`);
   });
 
   // 2️⃣ Bus broadcasts location updates along with user count and host name
@@ -69,7 +69,7 @@ export const socketHandler = (socket: any) => {
 
   // 4️⃣ Handle disconnection
   socket.on("disconnect", () => {
-    // console.log(`🔴 Client disconnected: ${socket.id}`);
+    console.log(`🔴 Client disconnected: ${socket.id}`);
   });
 };
 
