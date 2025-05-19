@@ -1,8 +1,9 @@
-import { IRoute, Request, Response } from "express";
+import { Request, Response } from "express";
 import { RouteService } from "./route.service";
 import sendResponse from "../../../shared/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../../../errors/ApiError";
+import { IRoute } from "./route.interface";
 
 const addRoute = async (req: Request, res: Response) => {
   const routeData: IRoute = req.body;
