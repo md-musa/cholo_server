@@ -8,13 +8,14 @@ import handleCastError from "../../errors/handleCastError";
 import handleZodError from "../../errors/handleZodError";
 import { logger } from "../../shared/logger";
 import { IGenericErrorMessage } from "../../interfaces/common";
+import { ErrorLogController } from "../modules/errorLog/errorLog.controller";
 
-const globalErrorHandler: ErrorRequestHandler = (error, req: Request, res: Response, next: NextFunction) => {
+const globalErrorHandler: ErrorRequestHandler = async (error, req: Request, res: Response, next: NextFunction) => {
   if (config.NODE_ENV === "development") {
     console.log(`🐱‍🏍 globalErrorHandler ~~`, { error });
   } else {
-    console.log(`🐱‍🏍 globalErrorHandler ~~`, error);
-    logger.error(`🐱‍🏍 globalErrorHandler ~~`, error);
+    // console.log(`🐱‍🏍 globalErrorHandler ~~`, error);
+    // logger.error(`🐱‍🏍 globalErrorHandler ~~`, error);
   }
 
   let statusCode = 500;
@@ -57,6 +58,19 @@ const globalErrorHandler: ErrorRequestHandler = (error, req: Request, res: Respo
           },
         ]
       : [];
+  }
+
+  if (config.NODE_ENV === "production") {
+    try {
+      await ErrorLogController.logErrorToDatabase({
+        message,
+        errorMessages,
+        stack: error?.stack,
+        method: req.method,
+        statusCode,
+        url: req.url,
+      });
+    } catch (err) {}
   }
 
   res.status(statusCode).json({
