@@ -31,6 +31,21 @@ const login = async (req: Request, res: Response): Promise<void> => {
     data: { accessToken, user },
   });
 };
+
+const refreshToken = async (req: Request, res: Response): Promise<void> => {
+  const { refreshToken } = req.cookies;
+  const { accessToken, newRefreshToken } = await AuthService.refreshToken(refreshToken);
+  res.cookie("refreshToken", newRefreshToken);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "New access token generated successfully",
+    data: { accessToken},
+  });
+}
+
+
 // const getUserProfileInfo = async (req: Request, res: Response): Promise<void> => {
 //   const {userId}
 
@@ -45,5 +60,6 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
 export const AuthController = {
   registerUser,
-  login
+  login,
+  refreshToken
 };

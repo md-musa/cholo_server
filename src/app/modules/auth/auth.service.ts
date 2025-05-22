@@ -9,8 +9,8 @@ import mongoose, { Types } from "mongoose";
 const userId: Types.ObjectId = new mongoose.Types.ObjectId();
 
 // Helper function to generate JWT tokens
-const generateToken = (data: Partial<IUser> & { _id: Types.ObjectId }, secret: Secret, expiration: string) => {
-  return jwt.sign({ ...data, _id: data._id.toString() }, secret, { expiresIn: "100d" });
+const generateToken = (data: Partial<IUser> & { _id: Types.ObjectId }, secret: Secret, expiration: any) => {
+  return jwt.sign({ ...data, _id: data._id.toString() }, secret, { expiresIn: expiration });
 };
 
 const registerUser = async (userInfo: IUser) => {
@@ -47,7 +47,7 @@ const registerUser = async (userInfo: IUser) => {
     REFRESH_TOKEN_LIFE
   );
 
-  return { accessToken, refreshToken, user: {_id, name, email, role, phoneNumber, routeId } };
+  return { accessToken, refreshToken, user: { _id, name, email, role, phoneNumber, routeId } };
 };
 
 const login = async (userInfo: { email: string; password: string }) => {
@@ -81,7 +81,50 @@ const login = async (userInfo: { email: string; password: string }) => {
     REFRESH_TOKEN_LIFE
   );
 
-  return { accessToken, refreshToken, user: {_id, name, email, role, phoneNumber, routeId } };
+  return { accessToken, refreshToken, user: { _id, name, email, role, phoneNumber, routeId } };
+};
+
+const refreshToken = async (token: string) => {
+  const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE, REFRESH_TOKEN_LIFE } = config.JWT;
+
+  if (!REFRESH_TOKEN_SECRET || !ACCESS_TOKEN_SECRET) {
+    throw new Error("JWT secrets are not defined in the configuration");
+  }
+
+  let decoded;
+  console.log("Decoded token", token);
+  try {
+    decoded = jwt.verify(token, REFRESH_TOKEN_SECRET) as {
+      _id: string;
+      email: string;
+      role: string;
+    };
+  } catch (err) {
+    // Token expired or invalid
+    throw ApiError.unauthorized("Invalid or expired refresh token");
+  }
+  console.log(new Date(decoded.iat * 1000).toLocaleString());
+  // Example output: "Mon, 21 Feb 2025 11:45:53 GMT"
+
+  console.log(new Date(decoded.exp * 1000).toLocaleString());
+  console.log("Decoded token", decoded);
+  const user = await UserModel.findById(decoded._id).populate("routeId");
+  if (!user) throw ApiError.notFound("User not found");
+
+  const { _id, email, role } = user;
+
+  const accessToken = generateToken(
+    { _id: _id as Types.ObjectId, email, role },
+    ACCESS_TOKEN_SECRET,
+    ACCESS_TOKEN_LIFE
+  );
+  const newRefreshToken = generateToken(
+    { _id: _id as Types.ObjectId, email, role },
+    REFRESH_TOKEN_SECRET,
+    REFRESH_TOKEN_LIFE
+  );
+
+  return { accessToken, newRefreshToken };
 };
 
 const getProfileInfo = async (userId: string) => {
@@ -91,4 +134,4 @@ const getProfileInfo = async (userId: string) => {
   return user;
 };
 
-export const AuthService = { registerUser, login, getProfileInfo };
+export const AuthService = { registerUser, login, getProfileInfo, refreshToken };
