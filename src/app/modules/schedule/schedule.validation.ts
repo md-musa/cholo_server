@@ -20,6 +20,8 @@ export const create = z.object({
      SCHEDULE_OPERATING_DAYS.FRIDAY,
     ]),
     note: z.string().optional(),
+    assignedBuses: z.array(z.string()).optional(), 
+    
   }),
 });
 
@@ -46,6 +48,7 @@ export const update = z.object({
       SCHEDULE_OPERATING_DAYS.FRIDAY,
     ]).optional(),
     note: z.string().optional(),
+    assignedBuses: z.array(z.string()).optional(), 
   }),
 });
 

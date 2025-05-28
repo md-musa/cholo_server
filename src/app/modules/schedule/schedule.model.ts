@@ -6,7 +6,7 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
   {
     routeId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Route", // Reference to the Routes collection
+      ref: "Route",
       required: true,
     },
     direction: {
@@ -36,6 +36,12 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
     note: {
       type: String,
     },
+    assignedBuses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Bus",
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -9,7 +9,7 @@ const registerUser = async (req: Request, res: Response): Promise<void> => {
 
   const { accessToken, refreshToken, user } = await AuthService.registerUser(userInfo);
   res.cookie("refreshToken", refreshToken);
-  
+
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
     success: true,
@@ -33,23 +33,25 @@ const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 const refreshToken = async (req: Request, res: Response): Promise<void> => {
+  console.log("refreshToken--------------\n [refresh()]", req.cookies);
   const { refreshToken } = req.cookies;
   const { accessToken, newRefreshToken } = await AuthService.refreshToken(refreshToken);
   res.cookie("refreshToken", newRefreshToken);
+
+  console.log("accessToken", accessToken);
+  console.log("newRefreshToken", newRefreshToken);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: "New access token generated successfully",
-    data: { accessToken},
+    data: { accessToken },
   });
-}
-
+};
 
 // const getUserProfileInfo = async (req: Request, res: Response): Promise<void> => {
 //   const {userId}
 
-  
 //   sendResponse(res, {
 //     statusCode: StatusCodes.OK,
 //     success: true,
@@ -61,5 +63,5 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
 export const AuthController = {
   registerUser,
   login,
-  refreshToken
+  refreshToken,
 };

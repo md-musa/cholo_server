@@ -9,7 +9,7 @@ const createSchedule = async (data: ISchedule) => {
 };
 
 const getAllSchedules = async () => {
-  return await ScheduleModel.find().populate("routeId", "name startLocation endLocation");
+  return await ScheduleModel.find().populate("routeId", "name startLocation endLocation").populate("assignedBuses", "name");
 };
 
 const getSchedulesByRoute = async (routeId: string, scheduleMode: string, day: string) => {
@@ -17,7 +17,7 @@ const getSchedulesByRoute = async (routeId: string, scheduleMode: string, day: s
     routeId,
     mode: scheduleMode,
     operatingDays: day,
-  }).populate("routeId", "name startLocation endLocation");
+  }).populate("routeId", "name startLocation endLocation").populate("assignedBuses", "name");
 
   const groupedSchedules = {
     from_campus: {
@@ -31,8 +31,12 @@ const getSchedulesByRoute = async (routeId: string, scheduleMode: string, day: s
   };
 
   for (const schedule of schedules) {
-    const directionKey = schedule.direction === SCHEDULE_DIRECTIONS.FROM_CAMPUS ? "from_campus" : "to_campus";
-    const userTypeKey = schedule.userType === SCHEDULE_USER_TYPES.STUDENT ? "student" : "employee";
+    const directionKey =
+      schedule.direction === SCHEDULE_DIRECTIONS.FROM_CAMPUS
+        ? SCHEDULE_DIRECTIONS.FROM_CAMPUS
+        : SCHEDULE_DIRECTIONS.TO_CAMPUS;
+    const userTypeKey =
+      schedule.userType === SCHEDULE_USER_TYPES.STUDENT ? SCHEDULE_USER_TYPES.STUDENT : SCHEDULE_USER_TYPES.EMPLOYEE;
 
     groupedSchedules[directionKey][userTypeKey].push(schedule);
   }

@@ -101,7 +101,7 @@ const refreshToken = async (token: string) => {
     };
   } catch (err) {
     // Token expired or invalid
-    throw ApiError.unauthorized("Invalid or expired refresh token");
+    throw ApiError.unauthorized("INVALID_REFRESH_TOKEN");
   }
   console.log(new Date(decoded.iat * 1000).toLocaleString());
   // Example output: "Mon, 21 Feb 2025 11:45:53 GMT"

@@ -14,14 +14,14 @@ router.get("/get-single-route-schedule", ScheduleController.getSchedulesByRoute)
 router.post(
   "/",
   validateRequest(ScheduleValidation.create),
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  // auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   ScheduleController.createSchedule
 );
 
 router.put(
   "/:id",
   validateRequest(ScheduleValidation.update),
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  // auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   ScheduleController.updateSchedule
 );
 

@@ -19,13 +19,17 @@ const auth =
       let verifiedUser = null;
 
       try {
-        verifiedUser = jwtHelpers.verifyToken(token, config.JWT.ACCESS_TOKEN_SECRET as Secret);
+        verifiedUser = jwtHelpers.verifyToken(token.split(" ")[1], config.JWT.ACCESS_TOKEN_SECRET as Secret);
       } catch (error) {
         // Token verification failed
-        return next(new ApiError(StatusCodes.UNAUTHORIZED, "Invalid or expired token"));
+        return next(new ApiError(StatusCodes.UNAUTHORIZED, "INVALID_ACCESS_TOKEN"));
       }
 
       req.user = verifiedUser; // role  , userid
+      console.log("verifiedUser", verifiedUser);
+      // print issue time and expiration time
+      console.log(new Date(verifiedUser.iat * 1000));
+      console.log(new Date(verifiedUser.exp * 1000));
 
       // role diye guard korar jnno
       if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {

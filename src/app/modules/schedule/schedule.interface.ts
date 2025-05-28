@@ -9,4 +9,5 @@ export interface ISchedule {
   mode: SCHEDULE_MODES.REGULAR | SCHEDULE_MODES.MID_TERM | SCHEDULE_MODES.FINAL_TERM | SCHEDULE_MODES.RAMADAN;
   operatingDays: SCHEDULE_OPERATING_DAYS.WEEKDAYS | SCHEDULE_OPERATING_DAYS.FRIDAY;
   note?: string; // Made optional
+  assignedBuses?: Types.ObjectId[]; 
 }
