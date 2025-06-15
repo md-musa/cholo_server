@@ -11,7 +11,7 @@ import config from "../../../config";
 import { SCHEDULE_OPERATING_DAYS } from "../../../constants";
 
 const createSchedule = async (req: Request, res: Response) => {
-  // console.log(req.body.time);
+  console.log(req.body);
   const data: ISchedule = req.body;
 
   const result = await ScheduleService.createSchedule(data);
@@ -50,7 +50,7 @@ const getSchedulesByRoute = async (req: Request, res: Response) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: "Schedules fetched successfully",
-    data: result,
+    data: { scheduleMode, day, schedules: result },
   });
 };
 

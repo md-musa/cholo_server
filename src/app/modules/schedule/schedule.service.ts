@@ -9,7 +9,9 @@ const createSchedule = async (data: ISchedule) => {
 };
 
 const getAllSchedules = async () => {
-  return await ScheduleModel.find().populate("routeId", "name startLocation endLocation").populate("assignedBuses", "name");
+  return await ScheduleModel.find()
+    .populate("routeId", "name startLocation endLocation")
+    .populate("assignedBuses", "name");
 };
 
 const getSchedulesByRoute = async (routeId: string, scheduleMode: string, day: string) => {
@@ -17,7 +19,9 @@ const getSchedulesByRoute = async (routeId: string, scheduleMode: string, day: s
     routeId,
     mode: scheduleMode,
     operatingDays: day,
-  }).populate("routeId", "name startLocation endLocation").populate("assignedBuses", "name");
+  })
+    .populate("routeId", "name startLocation endLocation")
+    .populate("assignedBuses", "name");
 
   const groupedSchedules = {
     from_campus: {

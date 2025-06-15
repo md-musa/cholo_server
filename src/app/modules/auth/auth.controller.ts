@@ -49,19 +49,23 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-// const getUserProfileInfo = async (req: Request, res: Response): Promise<void> => {
-//   const {userId}
+const getSingleUserData = async (req: Request, res: Response): Promise<void> => {
+  console.log(req.params);
+  console.log(req.query);
+  const { userId } = req.query;
+  const user = await AuthService.getSingleUserData(userId as string);
 
-//   sendResponse(res, {
-//     statusCode: StatusCodes.OK,
-//     success: true,
-//     message: "User logged in successfully",
-//     data: { accessToken, user },
-//   });
-// };
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "User fatched in successfully",
+    data: user,
+  });
+};
 
 export const AuthController = {
   registerUser,
   login,
   refreshToken,
+  getSingleUserData,
 };

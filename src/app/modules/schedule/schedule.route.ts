@@ -25,6 +25,6 @@ router.put(
   ScheduleController.updateSchedule
 );
 
-router.delete("/:id", auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), ScheduleController.deleteSchedule);
+router.delete("/:id", ScheduleController.deleteSchedule);
 
 export const ScheduleRouter = router;

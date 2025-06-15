@@ -127,11 +127,13 @@ const refreshToken = async (token: string) => {
   return { accessToken, newRefreshToken };
 };
 
-const getProfileInfo = async (userId: string) => {
+const getSingleUserData = async (userId: string) => {
+  console.log(userId)
   const user = await UserModel.findById(userId);
+  console.log(user);
   if (!user) throw ApiError.notFound("User not found");
 
   return user;
 };
 
-export const AuthService = { registerUser, login, getProfileInfo, refreshToken };
+export const AuthService = { registerUser, login, getSingleUserData, refreshToken };
