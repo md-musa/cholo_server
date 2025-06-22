@@ -33,6 +33,9 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
       enum: [SCHEDULE_OPERATING_DAYS.WEEKDAYS, SCHEDULE_OPERATING_DAYS.FRIDAY],
       required: true,
     },
+    serviceType: {
+      type: String,
+    },
     note: {
       type: String,
     },

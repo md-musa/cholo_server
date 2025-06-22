@@ -4,11 +4,10 @@ import { IRoute } from "./route.interface";
 
 const routeSchema = new Schema<IRoute>(
   {
-    name: { type: String, required: true, unique: true },
-    startLocation: { type: String, required: true },
-    endLocation: { type: String, required: true, unique: true },
-    totalDistance: { type: Number }, // optional
-    estimatedTime: { type: Number }, // optional
+    routeNo: { type: String, required: true, unique: true },
+    routeName: { type: String, required: true, unique: true },
+    totalDistance: { type: Number },
+    estimatedTime: { type: Number },
 
     wayline: {
       type: Schema.Types.Mixed, // replaces invalid `JSON`
@@ -17,7 +16,6 @@ const routeSchema = new Schema<IRoute>(
     assignedBuses: [
       {
         type: Schema.Types.ObjectId,
-        unique: true,
         ref: "Bus",
       },
     ],

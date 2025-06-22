@@ -12,7 +12,7 @@ router.get("/", RouteController.getRoutes);
 router.post(
   "/",
   validateRequest(RouteValidation.create),
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  // auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   RouteController.addRoute
 );
 

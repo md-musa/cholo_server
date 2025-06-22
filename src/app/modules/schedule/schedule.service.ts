@@ -8,10 +8,13 @@ const createSchedule = async (data: ISchedule) => {
   return schedule;
 };
 
-const getAllSchedules = async () => {
-  return await ScheduleModel.find()
-    .populate("routeId", "name startLocation endLocation")
-    .populate("assignedBuses", "name");
+const getAllSchedules = async (query) => {
+  if (query?.routeId) {
+    return await ScheduleModel.find({ routeId: query.routeId })
+      .populate("routeId", "routeNo routeName")
+      .populate("assignedBuses", "name");
+  }
+  return await ScheduleModel.find().populate("routeId", "routeNo routeName").populate("assignedBuses", "name");
 };
 
 const getSchedulesByRoute = async (routeId: string, scheduleMode: string, day: string) => {

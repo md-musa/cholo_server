@@ -1,9 +1,8 @@
 import { STUDENT_DENSITY } from "../../../constants";
 
 export interface IRoute {
-  name: string;
-  startLocation: string;
-  endLocation: string;
+  routeNo: string;
+  routeName: string;
   totalDistance?: number; // in kilometers
   estimatedTime?: number; // in minutes
   wayline?: unknown; // matches Mongoose Mixed

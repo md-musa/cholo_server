@@ -25,7 +25,9 @@ const createSchedule = async (req: Request, res: Response) => {
 };
 
 const getAllSchedules = async (req: Request, res: Response) => {
-  const result = await ScheduleService.getAllSchedules();
+  
+  
+  const result = await ScheduleService.getAllSchedules(req.query);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
