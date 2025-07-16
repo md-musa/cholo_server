@@ -9,7 +9,7 @@ const BusSchema = new Schema<IBus>(
       unique: true,
       lowercase: true,
       required: true,
-      trim: true, // Optional: removes extra whitespace
+      trim: true,
     },
     busType: {
       type: String,
@@ -19,7 +19,6 @@ const BusSchema = new Schema<IBus>(
     capacity: {
       type: Number,
       min: 1,
-      required: true, // Ensures it's not undefined
     },
     status: {
       type: String,

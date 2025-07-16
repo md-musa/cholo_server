@@ -12,14 +12,14 @@ router.get("/", BusController.getBuses);
 router.post(
   "/",
   validateRequest(BusValidation.create),
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  // auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   BusController.createBus
 );
 
 router.put(
   "/:id",
   validateRequest(BusValidation.update),
-  auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
+  // auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN),
   BusController.updateBus
 );
 

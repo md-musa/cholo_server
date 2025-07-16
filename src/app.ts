@@ -18,6 +18,7 @@ import { ScheduleRouter } from "./app/modules/schedule/schedule.route";
 import UserModel from "./app/modules/auth/auth.model";
 import { broadcastLocation } from "./app/socket/broadcast";
 import { ErrorLogRoute } from "./app/modules/errorLog/errorLog.route";
+import { PaymentRoute } from "./app/modules/payment/payment.route";
 
 const app: Application = express();
 
@@ -36,6 +37,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("HELLO WORLD");
 });
 
+app.use("/api/v1/payments", PaymentRoute);
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/buses", BusRouter);
 app.use("/api/v1/routes", RouteRouter);
