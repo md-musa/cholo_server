@@ -7,10 +7,7 @@ const create = z.object({
     bus: z.string().nonempty("BusId is required"),
     schedule: z.string().nonempty("ScheduleID is required"),
     nfcUid: z.string().nonempty("NFC_UID is required"),
-    location: z.object({
-      latitude: z.number(),
-      longitude: z.number(),
-    }),
+    coords: z.array(z.number()).length(2).nonempty("Coordinate is required"),
   }),
 });
 

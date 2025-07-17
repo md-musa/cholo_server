@@ -4,8 +4,5 @@ export interface IPaymentData {
   bus: string;
   schedule: string;
   nfcUID: string;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
+  coords: [number, number];
 }

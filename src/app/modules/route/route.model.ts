@@ -6,12 +6,24 @@ const routeSchema = new Schema<IRoute>(
   {
     routeNo: { type: String, required: true, unique: true },
     routeName: { type: String, required: true, unique: true },
-    totalDistance: { type: Number },
-    estimatedTime: { type: Number },
+    distance: { type: Number, default: 0 },
+    travelTime: { type: Number, default: 0 },
 
-    wayline: {
-      type: Schema.Types.Mixed, // replaces invalid `JSON`
+    routeLine: {
+      type: [[Number]],
+      required: true,
     },
+
+    stopages: [
+      {
+        name: { type: String, required: true },
+        fare: { type: Number, required: true },
+        coords: {
+          type: [Number],
+          required: true,
+        },
+      },
+    ],
 
     assignedBuses: [
       {
@@ -22,14 +34,14 @@ const routeSchema = new Schema<IRoute>(
 
     waypoints: [
       {
-        location: { type: String },
-        latitude: { type: Number },
-        longitude: { type: Number },
+        name: { type: String },
+        coords: {
+          type: [Number], // [lat, lng]
+        },
         studentDensity: {
           type: String,
-          enum: [STUDENT_DENSITY.LOW, STUDENT_DENSITY.MEDIUM, STUDENT_DENSITY.HIGH],
+          enum: Object.values(STUDENT_DENSITY),
         },
-        _id: false,
       },
     ],
   },

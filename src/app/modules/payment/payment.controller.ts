@@ -1,19 +1,22 @@
 import { Request, Response } from "express";
 import { IPaymentData } from "./payment.interface";
-import { ECBRouteStopages } from "../../../constants/stopages";
-import { getNearestStop } from "./payment.util";
 import sendResponse from "../../../shared/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../../../errors/ApiError";
+import { RouteModel } from "../route/route.model";
+import { findNearestStop } from "./payment.util";
 
 const createPayment = async (req: Request, res: Response): Promise<void> => {
-  console.log(req.body);
+  console.time("createPayment");
   const data: IPaymentData = req.body;
 
-  const nearestStop = getNearestStop(data.location, ECBRouteStopages);
-  console.table([nearestStop]);
+  const route = await RouteModel.findById(data.route).lean();
+  if (!route) {
+    throw ApiError.notFound("Route not found");
+  }
 
-  // throw ApiError.badRequest("Insuffecient balance");
+  const nearestStop = findNearestStop(data.coords, route.routeLine, route.stopages);
+  console.log("NearestStop:-----------\n", nearestStop);
 
   sendResponse(res, {
     success: true,
@@ -24,6 +27,8 @@ const createPayment = async (req: Request, res: Response): Promise<void> => {
       stop: nearestStop.name,
     },
   });
+
+  console.timeEnd("createPayment");
 };
 
 export const PaymentController = {
