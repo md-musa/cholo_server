@@ -19,6 +19,7 @@ import UserModel from "./app/modules/auth/auth.model";
 import { broadcastLocation } from "./app/socket/broadcast";
 import { ErrorLogRoute } from "./app/modules/errorLog/errorLog.route";
 import { PaymentRoute } from "./app/modules/payment/payment.route";
+import { FareMatrixRoute } from "./app/modules/stopage/stopage.route";
 
 const app: Application = express();
 
@@ -44,6 +45,7 @@ app.use("/api/v1/routes", RouteRouter);
 app.use("/api/v1/trips", TripRouter);
 app.use("/api/v1/logs", ErrorLogRoute);
 app.use("/api/v1/schedules", ScheduleRouter);
+app.use("/api/v1/fare-matrices", FareMatrixRoute);
 app.use(globalErrorHandler);
 app.use(routeNotFoundError);
 // ---------------------------

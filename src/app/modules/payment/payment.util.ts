@@ -1,24 +1,23 @@
-import haversine from "haversine";
 import * as turf from "@turf/turf";
 
-export const getNearestStop = (location, stops) => {
-  let minDistance = Infinity;
-  let nearestStop = null;
+export function calculateDistance(
+  checkinCoords: [number, number],
+  checkoutCoords: [number, number],
+  routeLine
+): number {
+  const checkinPoint = turf.point(checkinCoords);
+  const checkoutPoint = turf.point(checkoutCoords);
+  routeLine = turf.lineString(routeLine);
 
-  stops.forEach((stop) => {
-    const distance = haversine(location, {
-      latitude: stop.coords[1],
-      longitude: stop.coords[0],
-    });
+  // Snap points to the route
+  const snappedCheckin = turf.nearestPointOnLine(routeLine, checkinPoint);
+  const snappedCheckout = turf.nearestPointOnLine(routeLine, checkoutPoint);
 
-    if (distance < minDistance) {
-      minDistance = distance;
-      nearestStop = stop;
-    }
-  });
+  // Calculate distance along the route
+  const distance = turf.length(turf.lineSlice(snappedCheckin, snappedCheckout, routeLine), { units: "kilometers" });
 
-  return nearestStop;
-};
+  return distance;
+}
 
 export function findNearestStop(userCoords, routeLine, stopages) {
   const userPoint = turf.point(userCoords);

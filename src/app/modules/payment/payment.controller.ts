@@ -5,30 +5,54 @@ import { StatusCodes } from "http-status-codes";
 import ApiError from "../../../errors/ApiError";
 import { RouteModel } from "../route/route.model";
 import { findNearestStop } from "./payment.util";
+import { TransactionModel } from "./payment.model";
 
 const createPayment = async (req: Request, res: Response): Promise<void> => {
   const data: IPaymentData = req.body;
 
-  const route = await RouteModel.findById(data.route).lean();
-  if (!route) {
-    throw ApiError.notFound("Route not found");
+  const route = await RouteModel.findById(data.routeId).lean();
+  if (!route) throw ApiError.notFound("Route not found");
+
+  const history = await TransactionModel.find({ nfcUid: data.nfcUid }).sort({ createdAt: -1 }).limit(1).lean();
+  if (history.length === 0) {
+    const nearestStop = findNearestStop(data.checkinCoords, route.routeLine, route.stopages);
+
+    const newTransaction = await TransactionModel.create({
+      nfcUid: data.nfcUid,
+      routeId: data.routeId,
+      busId: data.busId,
+      startStopage: nearestStop.name,
+    });
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.CREATED,
+      message: "Payment initiated",
+      data: newTransaction,
+    });
+  } else {
+    const lastTransaction = history[0];
+    if (lastTransaction.endStopage) {
+      throw ApiError.badRequest("You have already checked out");
+    }
+
+    const nearestStop = findNearestStop(data.checkoutCoords, route.routeLine, route.stopages);
+    if (!nearestStop) {
+      throw ApiError.notFound("No nearby stop found for checkout");
+    }
+
+    const updatedData = await TransactionModel.findByIdAndUpdate(lastTransaction._id, {
+      endStopage: nearestStop.name,
+      checkoutTime: new Date(),
+    });
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Checkout successful",
+      data: updatedData,
+    });
+
+    // await handlePayment({ nfcUid: data.nfcUID, fare: nearestStop.fare });
   }
-
-  const nearestStop = findNearestStop(data.coords, route.routeLine, route.stopages);
-  const { name, fare } = nearestStop;
-
-  console.log("\nNearest stopage:");
-  console.table({ name, fare });
-
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Payment is successful",
-    data: {
-      fare: nearestStop.fare,
-      stop: nearestStop.name,
-    },
-  });
 };
 
 type HandlePaymentInput = {

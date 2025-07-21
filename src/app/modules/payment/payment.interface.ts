@@ -1,8 +1,10 @@
 export interface IPaymentData {
-  user: string;
-  route: string;
-  bus: string;
-  schedule: string;
-  nfcUID: string;
-  coords: [number, number];
+  userId: string;
+  routeId: string;
+  busId: string;
+  scheduleId: string;
+  nfcUid: string;
+  checkinCoords: [number, number];
+  checkoutCoords: [number, number];
+  fareCalculationMethod: "distance" | "stopage";
 }
