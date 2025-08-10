@@ -1,6 +1,6 @@
-import { SCHEDULE_OPERATING_DAYS } from "./../../../constants/index";
+import { SCHEDULE_OPERATING_DAYS } from "../../../enums/index";
 import { z } from "zod";
-import { SCHEDULE_DIRECTIONS, SCHEDULE_MODES, SCHEDULE_USER_TYPES } from "../../../constants";
+import { SCHEDULE_DIRECTIONS, SCHEDULE_MODES, SCHEDULE_USER_TYPES } from "../../../enums";
 
 export const create = z.object({
   body: z.object({

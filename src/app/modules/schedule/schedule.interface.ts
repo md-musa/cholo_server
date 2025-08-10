@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { SCHEDULE_DIRECTIONS, SCHEDULE_MODES, SCHEDULE_USER_TYPES, SCHEDULE_OPERATING_DAYS } from "../../../constants";
+import { SCHEDULE_DIRECTIONS, SCHEDULE_MODES, SCHEDULE_USER_TYPES, SCHEDULE_OPERATING_DAYS } from "../../../enums";
 
 export interface ISchedule {
   routeId: Types.ObjectId;

@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
-import { STUDENT_DENSITY } from "../../../constants";
+import { STUDENT_DENSITY } from "../../../enums";
 import { IRoute } from "./route.interface";
 
 const routeSchema = new Schema<IRoute>(

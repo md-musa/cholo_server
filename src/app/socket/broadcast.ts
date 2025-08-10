@@ -1,4 +1,4 @@
-import { SOCKET_EVENTS } from "../../constants";
+import { SOCKET_EVENTS } from "../../enums";
 import ApiError from "../../errors/ApiError";
 import { io } from "../../server";
 import { BusModel } from "../modules/bus/bus.model";

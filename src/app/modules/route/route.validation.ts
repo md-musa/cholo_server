@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { STUDENT_DENSITY } from "../../../constants";
+import { STUDENT_DENSITY } from "../../../enums";
 
 const stopageSchema = z.object({
   name: z.string().nonempty("Stopage name is required"),
@@ -30,9 +30,8 @@ const create = z.object({
     distance: z.number().positive("Total distance must be positive").optional(),
     travelTime: z.number().positive("Estimated time must be positive").optional(),
 
-    routeLine: z.array(z.array(z.number())).nonempty("Route line is required"),
-
-    stopages: z.array(stopageSchema),
+    routeLine: z.array(z.array(z.number())).optional(),
+    stopages: z.array(stopageSchema).optional(),
 
     assignedBuses: z.array(z.string()).optional(),
 

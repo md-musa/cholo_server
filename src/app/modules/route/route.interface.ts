@@ -1,4 +1,4 @@
-import { STUDENT_DENSITY } from "../../../constants";
+import { STUDENT_DENSITY } from "../../../enums";
 
 export interface IRoute {
   routeNo: string; // required

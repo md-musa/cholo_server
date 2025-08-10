@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { BUS_STATUS, BUS_TYPES } from "../../../constants";
+import { BUS_STATUS, BUS_TYPES } from "../../../enums";
 
 export interface IBus {
   name: string;

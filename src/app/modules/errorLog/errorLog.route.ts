@@ -2,10 +2,10 @@
 import express from "express";
 import { ErrorLogController } from "./errorLog.controller";
 import auth from "../../middlewares/auth";
-import { USER_ROLES } from "../../../constants";
+import { USER_ROLES } from "../../../enums";
 
 const router = express.Router();
 
-router.get("/", auth(USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN), ErrorLogController.getLogs);
+router.get("/", ErrorLogController.getLogs);
 
 export const ErrorLogRoute = router;

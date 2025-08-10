@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { ISchedule } from "./schedule.interface";
-import { SCHEDULE_DIRECTIONS, SCHEDULE_OPERATING_DAYS, SCHEDULE_MODES, SCHEDULE_USER_TYPES } from "../../../constants";
+import { SCHEDULE_DIRECTIONS, SCHEDULE_OPERATING_DAYS, SCHEDULE_MODES, SCHEDULE_USER_TYPES } from "../../../enums";
 
 const scheduleSchema: Schema<ISchedule> = new Schema(
   {

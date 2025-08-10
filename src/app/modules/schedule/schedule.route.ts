@@ -3,7 +3,7 @@ import { ScheduleController } from "./schedule.controller";
 import validateRequest from "../../middlewares/validateRequest";
 import { ScheduleValidation } from "./schedule.validation";
 import auth from "../../middlewares/auth";
-import { USER_ROLES } from "../../../constants";
+import { USER_ROLES } from "../../../enums";
 
 const router = express.Router();
 

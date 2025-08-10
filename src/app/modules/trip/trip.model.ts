@@ -1,6 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 import { ITrip } from "./trip.interface";
-import { BUS_TYPES, TRIP_STATUS } from "../../../constants";
+import { BUS_TYPES, TRIP_STATUS } from "../../../enums";
 
 const tripSchema = new Schema<ITrip>(
   {

@@ -1,4 +1,22 @@
 {
+    "userId": "681de61741a6d062595bc542",
+    "routeId": "6878e44a54851c8f7b93b524",
+    "busId": "685c430465f521c175a4ca79",
+    "scheduleId": "xxxxxx",
+    "nfcUid": "04A3B9C1D2E3F4",
+    "coords": [
+        90.31927802335116,
+        23.875686880447574
+    ],
+    "checkoutCoords": [
+        90.31927802335116,
+        23.875686880447574
+    ]
+}
+
+
+
+{
   "type": "FeatureCollection",
   "features": [
     {

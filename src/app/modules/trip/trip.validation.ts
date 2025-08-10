@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BUS_TYPES, TRIP_STATUS } from "../../../constants";
+import { BUS_TYPES, TRIP_STATUS } from "../../../enums";
 
 export const create = z.object({
   body: z.object({

@@ -8,18 +8,11 @@ import { AuthRouter } from "./app/modules/auth/auth.route";
 import { BusRouter } from "./app/modules/bus/bus.route";
 import { RouteRouter } from "./app/modules/route/route.route";
 import { TripRouter } from "./app/modules/trip/trip.route";
-import { logger } from "./shared/logger";
-import { SOCKET_EVENTS } from "./constants";
-import { BusModel } from "./app/modules/bus/bus.model";
-import ApiError from "./errors/ApiError";
-import { stat } from "fs";
+import { SOCKET_EVENTS } from "./enums";
 import { io } from "./server";
 import { ScheduleRouter } from "./app/modules/schedule/schedule.route";
-import UserModel from "./app/modules/auth/auth.model";
 import { broadcastLocation } from "./app/socket/broadcast";
 import { ErrorLogRoute } from "./app/modules/errorLog/errorLog.route";
-import { PaymentRoute } from "./app/modules/payment/payment.route";
-import { FareMatrixRoute } from "./app/modules/stopage/stopage.route";
 
 const app: Application = express();
 
@@ -38,14 +31,12 @@ app.get("/", (req: Request, res: Response) => {
   res.send("HELLO WORLD");
 });
 
-app.use("/api/v1/payments", PaymentRoute);
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/buses", BusRouter);
 app.use("/api/v1/routes", RouteRouter);
 app.use("/api/v1/trips", TripRouter);
 app.use("/api/v1/logs", ErrorLogRoute);
 app.use("/api/v1/schedules", ScheduleRouter);
-app.use("/api/v1/fare-matrices", FareMatrixRoute);
 app.use(globalErrorHandler);
 app.use(routeNotFoundError);
 // ---------------------------

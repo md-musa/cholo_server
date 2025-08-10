@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { IBus } from "./bus.interface";
-import { BUS_STATUS, BUS_TYPES } from "../../../constants";
+import { BUS_STATUS, BUS_TYPES } from "../../../enums";
 
 const BusSchema = new Schema<IBus>(
   {

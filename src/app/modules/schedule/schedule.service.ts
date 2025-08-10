@@ -1,4 +1,4 @@
-import { SCHEDULE_DIRECTIONS, SCHEDULE_USER_TYPES } from "../../../constants";
+import { SCHEDULE_DIRECTIONS, SCHEDULE_USER_TYPES } from "../../../enums";
 import { ISchedule } from "./schedule.interface";
 import ScheduleModel from "./schedule.model";
 import ApiError from "../../../errors/ApiError";

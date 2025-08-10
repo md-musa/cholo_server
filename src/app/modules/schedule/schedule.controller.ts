@@ -8,7 +8,7 @@ import { ScheduleService } from "./schedule.service";
 import sendResponse from "../../../shared/sendResponse";
 import ApiError from "../../../errors/ApiError";
 import config from "../../../config";
-import { SCHEDULE_OPERATING_DAYS } from "../../../constants";
+import { SCHEDULE_OPERATING_DAYS } from "../../../enums";
 
 const createSchedule = async (req: Request, res: Response) => {
   console.log(req.body);
