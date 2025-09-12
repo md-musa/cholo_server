@@ -10,5 +10,4 @@ export interface ISchedule {
   operatingDays: SCHEDULE_OPERATING_DAYS.WEEKDAYS | SCHEDULE_OPERATING_DAYS.FRIDAY;
   serviceType?: string; // Made optional
   note?: string; // Made optional
-  assignedBuses?: Types.ObjectId[];
 }

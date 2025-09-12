@@ -13,7 +13,7 @@ import { io } from "./server";
 import { ScheduleRouter } from "./app/modules/schedule/schedule.route";
 import { broadcastLocation } from "./app/socket/broadcast";
 import { ErrorLogRoute } from "./app/modules/errorLog/errorLog.route";
-
+import ScheduleAssignmentRoute from "./app/modules/scheduleAssign/scheduleAssign.route";
 const app: Application = express();
 
 app.use(cors());
@@ -37,6 +37,7 @@ app.use("/api/v1/routes", RouteRouter);
 app.use("/api/v1/trips", TripRouter);
 app.use("/api/v1/logs", ErrorLogRoute);
 app.use("/api/v1/schedules", ScheduleRouter);
+app.use("/api/v1/schedule-assignments", ScheduleAssignmentRoute);
 app.use(globalErrorHandler);
 app.use(routeNotFoundError);
 // ---------------------------

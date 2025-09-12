@@ -7,9 +7,8 @@ import { USER_ROLES } from "../../../enums";
 
 const router = express.Router();
 
-router.get("/", ScheduleController.getAllSchedules);
-
-router.get("/get-single-route-schedule", ScheduleController.getSchedulesByRoute);
+// router.get("/", ScheduleController.getSchedules);
+router.get("/route/:routeId", ScheduleController.getScheduleByRoute);
 
 router.post(
   "/",

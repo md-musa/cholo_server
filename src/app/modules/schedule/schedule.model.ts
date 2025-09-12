@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, setDriver } from "mongoose";
 import { ISchedule } from "./schedule.interface";
 import { SCHEDULE_DIRECTIONS, SCHEDULE_OPERATING_DAYS, SCHEDULE_MODES, SCHEDULE_USER_TYPES } from "../../../enums";
 
@@ -39,12 +39,6 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
     note: {
       type: String,
     },
-    assignedBuses: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Bus",
-      },
-    ],
   },
   { timestamps: true }
 );
