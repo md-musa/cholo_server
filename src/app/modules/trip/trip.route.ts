@@ -14,4 +14,15 @@ router.post(
   TripController.create
 );
 
+router.put(
+  "/:id",
+  validateRequest(TripValidation.update),
+  // auth(USER_ROLES.STUDENT, USER_ROLES.EMPLOYEE),
+  TripController.update
+);
+
+router.get("/:id", TripController.getById);
+router.get("/", TripController.getAll);
+router.delete("/:id", TripController.delete);
+
 export const TripRouter = router;
