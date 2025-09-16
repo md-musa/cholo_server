@@ -16,7 +16,8 @@ export const ScheduleService = {
       routeId,
       mode: scheduleMode,
       operatingDays,
-    })
+    });
+    console.log("-schedules", schedules);
 
     // 2. Fetch all assignments for these schedules
     const scheduleIds = schedules.map((s) => s._id);

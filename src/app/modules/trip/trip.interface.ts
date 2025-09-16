@@ -8,3 +8,15 @@ export interface ITrip {
   endTime?: Date;
   note?: string;
 }
+
+
+export interface IUserTrip {
+  routeId: Schema.Types.ObjectId | string;
+  hostId: Schema.Types.ObjectId | string;
+  busName: string;
+  departureTime?: Date;
+  direction: string;
+  status: TRIP_STATUS.SCHEDULED | TRIP_STATUS.ONGOING | TRIP_STATUS.COMPLETED | TRIP_STATUS.CANCELED;
+  busType: BUS_TYPES.STUDENT | BUS_TYPES.EMPLOYEE;
+  note?: string;
+}

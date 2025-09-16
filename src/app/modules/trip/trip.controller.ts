@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import sendResponse from "../../../shared/sendResponse";
 import { ITrip } from "./trip.interface";
-import { TripService } from "./trip.service";
+import { TripService, UserTripService } from "./trip.service";
 import { Request, Response } from "express";
 import ApiError from "../../../errors/ApiError";
 
@@ -73,6 +73,22 @@ export const TripController = {
       statusCode: trip ? StatusCodes.OK : StatusCodes.NOT_FOUND,
       message: trip ? "Trip deleted successfully" : "Trip not found",
       data: trip || null,
+    });
+  },
+};
+
+export const UserTripController = {
+  create: async (req: Request, res: Response) => {
+    console.log(req.body);
+    const tripData = req.body;
+    console.log(tripData);
+    const trip = await UserTripService.create(tripData);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.CREATED,
+      message: "Trip created successfully",
+      data: trip,
     });
   },
 };

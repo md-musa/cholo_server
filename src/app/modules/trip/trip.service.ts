@@ -1,7 +1,7 @@
 import { TRIP_STATUS } from "../../../enums";
 import ApiError from "../../../errors/ApiError";
 import { ITrip } from "./trip.interface";
-import { TripModel } from "./trip.model";
+import { TripModel, UserTripModel } from "./trip.model";
 
 export const TripService = {
   create: async (tripData: ITrip) => {
@@ -49,6 +49,13 @@ export const TripService = {
 
   delete: async (id: string) => {
     const trip = await TripModel.findByIdAndDelete(id);
+    return trip;
+  },
+};
+
+export const UserTripService = {
+  create: async (tripData) => {
+    const trip = await UserTripModel.create(tripData);
     return trip;
   },
 };
