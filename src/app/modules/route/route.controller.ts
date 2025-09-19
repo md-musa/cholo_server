@@ -17,6 +17,7 @@ const addRoute = async (req: Request, res: Response) => {
 };
 const getRoutes = async (req: Request, res: Response) => {
   const routes = await RouteService.getRoutes();
+  // console.log(routes);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

@@ -63,9 +63,21 @@ const getSingleUserData = async (req: Request, res: Response): Promise<void> => 
   });
 };
 
+const getAllDrivers = async (req: Request, res: Response): Promise<void> => {
+  const user = await AuthService.getAllDrivers();
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "User fatched in successfully",
+    data: user,
+  });
+};
+
 export const AuthController = {
   registerUser,
   login,
   refreshToken,
   getSingleUserData,
+  getAllDrivers
 };

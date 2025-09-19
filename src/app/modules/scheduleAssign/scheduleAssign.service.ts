@@ -3,6 +3,7 @@ import ScheduleModel from "../schedule/schedule.model";
 import ScheduleAssignmentModel from "./scheduleAssign.model";
 import { IAssignment } from "./scheduleAssign.interface";
 import { TripModel } from "../trip/trip.model";
+import moment from "moment";
 
 function timeToMinutes(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
@@ -53,7 +54,7 @@ export const ScheduleAssignmentService = {
       .populate({
         path: "scheduleId",
         populate: {
-          path: "routeId", 
+          path: "routeId",
           select: "routeName",
         },
       })
@@ -64,10 +65,15 @@ export const ScheduleAssignmentService = {
     const ids = assignments.map((a) => a._id);
 
     // 2. Find all trips linked to these assignments
-    const trips = await TripModel.find({ assignmentId: { $in: ids } }).lean();
+    const startOfDay = moment().startOf("day").toDate();
+    const endOfDay = moment().endOf("day").toDate();
 
-    // 3. Attach trip info to each assignment
-    const assignmentsWithTripInfo = assignments.map((a) => {
+    const trips = await TripModel.find({
+      assignmentId: { $in: ids },
+      createdAt: { $gte: startOfDay, $lte: endOfDay },
+    }).lean();
+
+    let assignmentsWithTripInfo = assignments.map((a) => {
       const relatedTrip = trips.find((t) => t.assignmentId?.toString() === a._id.toString());
 
       return {
@@ -77,6 +83,13 @@ export const ScheduleAssignmentService = {
         startTime: relatedTrip?.startTime || null,
         endTime: relatedTrip?.endTime || null,
       };
+    });
+    console.log("-assignmentsWithTripInfo", assignmentsWithTripInfo);
+    // 4. Sort by assignment time (HH:mm format)
+    assignmentsWithTripInfo = assignmentsWithTripInfo.sort((a, b) => {
+      const timeA = moment(a.scheduleId.time, "HH:mm");
+      const timeB = moment(b.scheduleId.time, "HH:mm");
+      return timeA.diff(timeB);
     });
 
     return assignmentsWithTripInfo;

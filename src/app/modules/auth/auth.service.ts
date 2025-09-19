@@ -128,12 +128,15 @@ const refreshToken = async (token: string) => {
 };
 
 const getSingleUserData = async (userId: string) => {
-  console.log(userId)
+  console.log(userId);
   const user = await UserModel.findById(userId);
   console.log(user);
   if (!user) throw ApiError.notFound("User not found");
 
   return user;
 };
+const getAllDrivers = async () => {
+  return await UserModel.find({ role: "driver" });
+};
 
-export const AuthService = { registerUser, login, getSingleUserData, refreshToken };
+export const AuthService = { registerUser, login, getSingleUserData, refreshToken, getAllDrivers };

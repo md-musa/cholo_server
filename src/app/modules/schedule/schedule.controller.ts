@@ -39,6 +39,23 @@ export const ScheduleController = {
       data: { scheduleMode, operatingDays, schedules: result },
     });
   },
+  getScheduleForAdminByRoute: async (req: Request, res: Response) => {
+    const { routeId } = req.params;
+
+    if (!routeId) {
+      throw ApiError.badRequest("Route ID is required");
+    }
+
+    const scheduleMode = config.APP_VARIABLES.SCHEDULE_MODE;
+    const result = await ScheduleService.getScheduleForAdminByRoute(routeId as string, scheduleMode);
+    console.log(result);
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Schedules fetched successfully",
+      data: { scheduleMode, schedules: result },
+    });
+  },
 
   updateSchedule: async (req: Request, res: Response) => {
     const { id } = req.params;
