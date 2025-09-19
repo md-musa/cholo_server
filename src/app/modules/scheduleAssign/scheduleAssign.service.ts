@@ -87,7 +87,11 @@ export const ScheduleAssignmentService = {
     console.log("-assignmentsWithTripInfo", assignmentsWithTripInfo);
     // 4. Sort by assignment time (HH:mm format)
     assignmentsWithTripInfo = assignmentsWithTripInfo.sort((a, b) => {
+      console.log("-a.scheduleId.time", a.scheduleId);
+
+      // @ts-ignore
       const timeA = moment(a.scheduleId.time, "HH:mm");
+      // @ts-ignore
       const timeB = moment(b.scheduleId.time, "HH:mm");
       return timeA.diff(timeB);
     });
