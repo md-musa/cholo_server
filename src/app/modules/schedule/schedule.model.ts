@@ -35,6 +35,7 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
     },
     serviceType: {
       type: String,
+      enum: ["shuttle"],
     },
     note: {
       type: String,
@@ -43,7 +44,6 @@ const scheduleSchema: Schema<ISchedule> = new Schema(
   { timestamps: true }
 );
 
-// Create the Mongoose model for the Schedule
 const ScheduleModel = mongoose.model<ISchedule>("Schedule", scheduleSchema);
 
 export default ScheduleModel;

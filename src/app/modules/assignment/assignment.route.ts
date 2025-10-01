@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { ScheduleAssignmentController } from "./scheduleAssign.controller";
-import ScheduleAssignmentValidation from "./scheduleAssign.validation";
+import { ScheduleAssignmentController } from "./assignment.controller";
+import ScheduleAssignmentValidation from "./assignment.validation";
 import validateRequest from "../../middlewares/validateRequest";
 
 const router = Router();

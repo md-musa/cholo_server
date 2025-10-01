@@ -32,9 +32,7 @@ const create = z.object({
 
     routeLine: z.array(z.array(z.number())).optional(),
     stopages: z.array(stopageSchema).optional(),
-
     assignedBuses: z.array(z.string()).optional(),
-
     waypoints: z.array(waypointSchema).optional(),
   }),
 });

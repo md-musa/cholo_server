@@ -1,15 +1,13 @@
 import { Schema } from "mongoose";
 import { USER_ROLES } from "../../../enums";
 
-export interface IUser{
-    name: string;
-    email: string;
-    role: USER_ROLES.ADMIN | USER_ROLES.EMPLOYEE | USER_ROLES.STUDENT | USER_ROLES.SUPER_ADMIN;
-    password: string;
-    phoneNumber: string;
-    houseLocation: {
-        latitude: number;
-        longitude: number;
-    };
-    routeId: Schema.Types.ObjectId;
+export interface IUser {
+  name: string;
+  email: string;
+  role: USER_ROLES.EMPLOYEE | USER_ROLES.STUDENT | USER_ROLES.ADMIN | USER_ROLES.SUPER_ADMIN;
+  phoneNumber?: string;
+  password: string;
+  houseCoords?: [number, number];
+  routeId: Schema.Types.ObjectId;
+  notificationToken?: string;
 }

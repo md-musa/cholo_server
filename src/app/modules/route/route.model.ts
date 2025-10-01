@@ -17,7 +17,7 @@ const routeSchema = new Schema<IRoute>(
     stopages: [
       {
         name: { type: String, required: true },
-        fare: { type: Number, required: true },
+        fare: { type: Number, required: false },
         coords: {
           type: [Number],
           required: true,

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ScheduleAssignmentService } from "./scheduleAssign.service";
+import { ScheduleAssignmentService } from "./assignment.service";
 import sendResponse from "../../../shared/sendResponse";
 
 export const ScheduleAssignmentController = {

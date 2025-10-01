@@ -13,7 +13,7 @@ import { io } from "./server";
 import { ScheduleRouter } from "./app/modules/schedule/schedule.route";
 import { broadcastLocation } from "./app/socket/broadcast";
 import { ErrorLogRoute } from "./app/modules/errorLog/errorLog.route";
-import ScheduleAssignmentRoute from "./app/modules/scheduleAssign/scheduleAssign.route";
+import ScheduleAssignmentRoute from "./app/modules/assignment/assignment.route";
 const app: Application = express();
 
 app.use(cors());

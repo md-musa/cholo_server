@@ -3,9 +3,9 @@ import { BUS_STATUS, BUS_TYPES } from "../../../enums";
 
 export interface IBus {
   name: string;
+  busType: BUS_TYPES;
   capacity: number;
-  busType: BUS_TYPES; // No need to split, use the enum directly
   status: BUS_STATUS;
-  assignedRouteId?: Types.ObjectId; // Correct typing for MongoDB _id
+  assignedRouteId?: Types.ObjectId;
   assignedDriverId?: Types.ObjectId;
 }

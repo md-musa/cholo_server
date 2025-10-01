@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import { SCHEDULE_DIRECTIONS, SCHEDULE_MODES, SCHEDULE_USER_TYPES, SCHEDULE_OPERATING_DAYS } from "../../../enums";
 
 export interface ISchedule {
+  _id: Types.ObjectId;
   routeId: Types.ObjectId;
   direction: SCHEDULE_DIRECTIONS.TO_CAMPUS | SCHEDULE_DIRECTIONS.FROM_CAMPUS;
   time: string; // Time as string in "HH:mm" format

@@ -17,7 +17,7 @@ export const ScheduleValidation = {
       ]),
       operatingDays: z.enum([SCHEDULE_OPERATING_DAYS.WEEKDAYS, SCHEDULE_OPERATING_DAYS.FRIDAY]),
       note: z.string().optional(),
-      serviceType: z.string().optional(),
+      serviceType: z.enum(["shuttle"]).optional(),
     }),
   }),
 
@@ -32,7 +32,7 @@ export const ScheduleValidation = {
         .optional(),
       operatingDays: z.enum([SCHEDULE_OPERATING_DAYS.WEEKDAYS, SCHEDULE_OPERATING_DAYS.FRIDAY]).optional(),
       note: z.string().optional(),
-      serviceType: z.string().optional(),
+      serviceType: z.enum(["shuttle"]).optional(),
     }),
   }),
 };

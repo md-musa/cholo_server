@@ -13,7 +13,7 @@ const BusSchema = new Schema<IBus>(
     },
     busType: {
       type: String,
-      enum: Object.values(BUS_TYPES),
+      enum: [BUS_TYPES.STUDENT, BUS_TYPES.EMPLOYEE],
       required: true,
     },
     capacity: {
@@ -22,7 +22,7 @@ const BusSchema = new Schema<IBus>(
     },
     status: {
       type: String,
-      enum: Object.values(BUS_STATUS),
+      enum: [BUS_STATUS.ACTIVE, BUS_STATUS.INACTIVE, BUS_STATUS.MAINTENANCE],
       default: BUS_STATUS.ACTIVE,
     },
     assignedRouteId: {

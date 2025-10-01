@@ -6,7 +6,7 @@ export const TripValidation = {
     body: z.object({
       assignmentId: z.string({ required_error: "Assignment ID is required" }),
       status: z
-        .enum([TRIP_STATUS.SCHEDULED, TRIP_STATUS.ONGOING, TRIP_STATUS.COMPLETED, TRIP_STATUS.CANCELED])
+        .enum([TRIP_STATUS.SCHEDULED, TRIP_STATUS.DEPARTED, TRIP_STATUS.COMPLETED, TRIP_STATUS.CANCELED])
         .optional(),
       startTime: z.coerce.date().optional(),
       endTime: z.coerce.date().optional(),
@@ -17,7 +17,7 @@ export const TripValidation = {
     body: z.object({
       assignmentId: z.string({ required_error: "Assignment ID is required" }).optional(),
       status: z
-        .enum([TRIP_STATUS.SCHEDULED, TRIP_STATUS.ONGOING, TRIP_STATUS.COMPLETED, TRIP_STATUS.CANCELED])
+        .enum([TRIP_STATUS.SCHEDULED, TRIP_STATUS.DEPARTED, TRIP_STATUS.COMPLETED, TRIP_STATUS.CANCELED])
         .optional(),
       startTime: z.coerce.date().optional(),
       endTime: z.coerce.date().optional(),
@@ -34,7 +34,7 @@ export const TripValidation = {
       busType: z.enum([BUS_TYPES.STUDENT, BUS_TYPES.EMPLOYEE]),
       direction: z.string().nonempty("Direction is required"),
       status: z
-        .enum([TRIP_STATUS.SCHEDULED, TRIP_STATUS.ONGOING, TRIP_STATUS.COMPLETED, TRIP_STATUS.CANCELED])
+        .enum([TRIP_STATUS.SCHEDULED, TRIP_STATUS.DEPARTED, TRIP_STATUS.COMPLETED, TRIP_STATUS.CANCELED])
         .optional(),
       note: z.string().optional(),
     }),

@@ -3,7 +3,7 @@ import ApiError from "../../../errors/ApiError";
 import { ITrip } from "./trip.interface";
 import { TripModel, UserTripModel } from "./trip.model";
 
-export const TripService = {
+export const DriverTripService = {
   create: async (tripData: ITrip) => {
     const trip = await TripModel.create(tripData);
     return trip;
@@ -14,21 +14,21 @@ export const TripService = {
     console.log(trip);
     if (!trip) throw ApiError.notFound("Trip not found");
 
-    // Prevent updating if trip is already completed or ongoing (and trying to cancel)
+    // Prevent updating if trip is already completed or departed (and trying to cancel)
     if (
       payload.status === TRIP_STATUS.CANCELED &&
-      (trip.status === TRIP_STATUS.ONGOING || trip.status === TRIP_STATUS.COMPLETED)
+      (trip.status === TRIP_STATUS.DEPARTED || trip.status === TRIP_STATUS.COMPLETED)
     ) {
-      throw ApiError.badRequest("Cannot cancel an ongoing or completed trip");
+      throw ApiError.badRequest("Cannot cancel an departed or completed trip");
     }
 
     // If trip is starting
-    if (payload.status === TRIP_STATUS.ONGOING && trip.status === TRIP_STATUS.SCHEDULED) {
+    if (payload.status === TRIP_STATUS.DEPARTED && trip.status === TRIP_STATUS.SCHEDULED) {
       payload.startTime = new Date();
     }
 
     // If trip is being completed
-    if (payload.status === TRIP_STATUS.COMPLETED && trip.status === TRIP_STATUS.ONGOING) {
+    if (payload.status === TRIP_STATUS.COMPLETED && trip.status === TRIP_STATUS.DEPARTED) {
       payload.endTime = new Date();
     }
 

@@ -15,7 +15,7 @@ const generateToken = (data: Partial<IUser> & { _id: Types.ObjectId }, secret: S
 
 const registerUser = async (userInfo: IUser) => {
   const existingUser = await UserModel.findOne({ email: userInfo.email });
-  if (existingUser) throw ApiError.badRequest("User already exists");
+  if (existingUser) throw ApiError.badRequest("User already exist with this email");
 
   // Create new user
   const user = await (await UserModel.create(userInfo)).populate("routeId");
@@ -52,16 +52,15 @@ const registerUser = async (userInfo: IUser) => {
 
 const login = async (userInfo: { email: string; password: string }) => {
   const user = await UserModel.findOne({ email: userInfo.email }).populate("routeId");
-  if (!user) throw ApiError.notFound("User not found");
+  if (!user) throw ApiError.notFound("There is no account with this email");
 
   const isPasswordValid = await bcrypt.compare(userInfo.password, user.password);
-  if (!isPasswordValid) throw ApiError.unauthorized("Invalid password");
+  if (!isPasswordValid) throw ApiError.unauthorized("Password is incorrect");
 
   const { _id, name, email, role, phoneNumber, routeId } = user;
 
   const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFE, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_LIFE } = config.JWT;
 
-  // Generate tokens
   // Generate tokens
   if (!ACCESS_TOKEN_LIFE || !REFRESH_TOKEN_LIFE) {
     throw new Error("JWT token lifetimes are not defined in the configuration");
@@ -109,7 +108,7 @@ const refreshToken = async (token: string) => {
   console.log(new Date(decoded.exp * 1000).toLocaleString());
   console.log("Decoded token", decoded);
   const user = await UserModel.findById(decoded._id).populate("routeId");
-  if (!user) throw ApiError.notFound("User not found");
+  if (!user) throw ApiError.notFound("There is no account with this id");
 
   const { _id, email, role } = user;
 

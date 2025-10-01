@@ -1,56 +1,61 @@
 import { LRUCache } from "lru-cache";
-import { SOCKET_EVENTS } from "../../enums";
+import { SOCKET_EVENTS, USER_ROLES } from "../../enums";
 import { io } from "../../server";
 import { TripModel, UserTripModel } from "../modules/trip/trip.model";
-
-// Cache for trips (max 100 entries, 5 minutes TTL)
-const tripCache = new LRUCache<string, any>({
-  max: 100,
-  ttl: 1000 * 60 * 5,
-});
-
-// Cache for average bus speeds (max 100 buses, 10 minutes TTL)
-const speedCache = new LRUCache<string, { avgSpeed: number; samples: number }>({
-  max: 100,
-  ttl: 1000 * 60 * 10,
-});
+import type { Server } from "socket.io";
+import { updateTripSpeedAverage, getRoomUserCount, nowIso } from "./util";
 
 /**
- * Update rolling average speed using busName as unique key.
+ * Local in-memory cache for trip documents to avoid DB lookups for every location update.
+ * Key: tripId
  */
-function updateSpeedCache(busName: string, speed: number | undefined) {
-  if (speed === undefined || speed < 0) return;
+const tripCache = new LRUCache<string, any>({
+  max: 100,
+  ttl: 1000 * 60 * 5, // 5 minutes
+});
 
-  let speedData = speedCache.get(busName);
+export interface IncomingLocationPayload {
+  broadcaster: "user" | "driver";
+  tripId: string;
+  latitude: number;
+  longitude: number;
+  heading?: number;
+  speed?: number; // in m/s
+}
 
-  if (!speedData) {
-    speedData = { avgSpeed: speed, samples: 1 };
-  } else {
-    speedData.samples++;
-    speedData.avgSpeed = (speedData.avgSpeed * (speedData.samples - 1) + speed) / speedData.samples;
-  }
-
-  speedCache.set(busName, speedData);
-  return speedData.avgSpeed;
+export interface OutgoingLocationPayload {
+  tripId?: string;
+  busName?: string;
+  routeId: string;
+  direction?: string;
+  userType?: string;
+  latitude: number;
+  longitude: number;
+  heading?: number;
+  speed?: number;
+  avgSpeed: number;
+  currUserCnt: number;
+  timestamp: string;
 }
 
 /**
- * Broadcasts a location update to all clients in a route room.
+ * Emit location payload to all clients subscribed to the route room.
  */
-function emitLocationUpdate(routeId: string, payload: any) {
-  io.to(routeId).emit(SOCKET_EVENTS.BUS_LOCATION_UPDATE, payload);
+function emitRouteLocationUpdate(ioServer: Server, routeId: string, payload: OutgoingLocationPayload) {
+  ioServer.to(routeId).emit(SOCKET_EVENTS.BUS_LOCATION_UPDATE, payload);
   console.log(
-    `📡 Broadcasted bus ${payload.busName} | AvgSpeed: ${payload.avgSpeed?.toFixed(2) || 0} | UserCnt: ${
-      payload.currUserCnt
-    }`
+    `📡 Broadcasted on route ${routeId} — bus=${payload.busName || "-"} avgSpeed=${payload.avgSpeed.toFixed(
+      2
+    )} userCount=${payload.currUserCnt}`
   );
 }
 
 /**
- * Broadcast location when sent by passenger or other user.
+ * Handle location updates sent by passengers or other non-driver users.
+ * Loads the user trip from cache/DB and broadcasts to the route room.
  */
-async function broadcastLocationByUser(data: any) {
-  console.log("📍 Location update from user:", data);
+export async function handleUserLocationBroadcast(ioServer: Server, data: IncomingLocationPayload) {
+  console.log("📍 User location update received:", data);
   const { tripId, latitude, longitude, heading, speed } = data;
 
   try {
@@ -59,23 +64,23 @@ async function broadcastLocationByUser(data: any) {
     if (!trip) {
       trip = await UserTripModel.findById(tripId).lean();
       if (!trip) {
-        console.log("❌ User trip not found:", tripId);
+        console.warn("❌ UserTrip not found for id:", tripId);
         return;
       }
-      tripCache.set(tripId, trip); // Cache user trip
+      tripCache.set(tripId, trip);
+      console.log("✅ Cached UserTrip:", tripId);
     }
 
     const { routeId, busName, direction, busType } = trip;
 
-    // Update rolling average speed
-    const avgSpeed = updateSpeedCache(busName, speed) || 0;
+    const avgSpeed = updateTripSpeedAverage(tripId, speed) ?? 0;
+    const currUserCnt = getRoomUserCount(ioServer, routeId.toString());
+    const timestamp = nowIso();
 
-    const currUserCnt = io.sockets.adapter.rooms.get(routeId.toString())?.size || 0;
-    const timestamp = new Date().toISOString();
-
-    const broadcaster = {
+    const outgoing: OutgoingLocationPayload = {
+      tripId,
       busName,
-      routeId,
+      routeId: routeId.toString(),
       direction,
       userType: busType,
       latitude,
@@ -87,17 +92,17 @@ async function broadcastLocationByUser(data: any) {
       timestamp,
     };
 
-    emitLocationUpdate(routeId, broadcaster);
-  } catch (error) {
-    console.error("❌ Error broadcasting location by user:", error);
+    emitRouteLocationUpdate(ioServer, routeId.toString(), outgoing);
+  } catch (err) {
+    console.error("❌ Error in handleUserLocationBroadcast:", err);
   }
 }
 
 /**
- * Broadcast location when sent by driver.
+ * Handle location updates sent by drivers. Trip document includes assignment and bus details.
  */
-async function broadcastLocationByDriver(data: any) {
-  console.log("📍 Location update from driver:", data);
+export async function handleDriverLocationBroadcast(ioServer: Server, data: IncomingLocationPayload) {
+  console.log("📍 Driver location update received:", data);
   const { tripId, latitude, longitude, heading, speed } = data;
 
   try {
@@ -109,38 +114,34 @@ async function broadcastLocationByDriver(data: any) {
           path: "assignmentId",
           populate: [
             { path: "busId", model: "Bus", select: "name" },
-            {
-              path: "scheduleId",
-              model: "Schedule",
-              select: "time direction userType routeId",
-            },
+            { path: "scheduleId", model: "Schedule", select: "time direction userType routeId" },
           ],
         })
         .lean();
 
       if (!trip) {
-        console.log("❌ Trip not found:", tripId);
+        console.warn("❌ Trip not found for id:", tripId);
         return;
       }
 
-      tripCache.set(tripId, trip); // Cache driver trip
-      console.log("✅ Trip cached:", tripId);
+      tripCache.set(tripId, trip);
+      console.log("✅ Cached Trip:", tripId);
     }
 
-    const busName = trip.assignmentId.busId.name;
-    const routeId = trip.assignmentId.scheduleId.routeId.toString();
+    const busName: string | undefined = trip.assignmentId?.busId?.name;
+    const routeId: string = trip.assignmentId?.scheduleId?.routeId?.toString();
+    const direction = trip.assignmentId?.scheduleId?.direction;
+    const userType = trip.assignmentId?.scheduleId?.userType;
 
-    // Update average speed using busName
-    const avgSpeed = updateSpeedCache(busName, speed) || 0;
+    const avgSpeed = updateTripSpeedAverage(tripId, speed) ?? 0;
+    const currUserCnt = getRoomUserCount(ioServer, routeId);
+    const timestamp = nowIso();
 
-    const currUserCnt = io.sockets.adapter.rooms.get(routeId)?.size || 0;
-    const timestamp = new Date().toISOString();
-
-    const broadcaster = {
+    const outgoing: OutgoingLocationPayload = {
       busName,
-      direction: trip.assignmentId.scheduleId.direction,
-      userType: trip.assignmentId.scheduleId.userType,
       routeId,
+      direction,
+      userType,
       latitude,
       longitude,
       heading,
@@ -150,19 +151,20 @@ async function broadcastLocationByDriver(data: any) {
       timestamp,
     };
 
-    emitLocationUpdate(routeId, broadcaster);
-  } catch (error) {
-    console.error("❌ Error broadcasting location by driver:", error);
+    emitRouteLocationUpdate(ioServer, routeId, outgoing);
+  } catch (err) {
+    console.error("❌ Error in handleDriverLocationBroadcast:", err);
   }
 }
 
 /**
- * Main broadcast handler
+ * Public entry point for broadcasting location updates. Decides which handler to call
+ * based on broadcaster type.
  */
-export async function broadcastLocation(data: any) {
+export async function handleLocationBroadcast(ioServer: Server, data: IncomingLocationPayload) {
   if (data.broadcaster === "user") {
-    return broadcastLocationByUser(data);
+    return handleUserLocationBroadcast(ioServer, data);
   }
 
-  return broadcastLocationByDriver(data);
+  return handleDriverLocationBroadcast(ioServer, data);
 }

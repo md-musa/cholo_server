@@ -1,17 +1,17 @@
 import { StatusCodes } from "http-status-codes";
 import sendResponse from "../../../shared/sendResponse";
 import { ITrip } from "./trip.interface";
-import { TripService, UserTripService } from "./trip.service";
+import { DriverTripService, UserTripService } from "./trip.service";
 import { Request, Response } from "express";
 import ApiError from "../../../errors/ApiError";
 
-export const TripController = {
+export const DriverTripController = {
   // Create a trip
   create: async (req: Request, res: Response) => {
     const tripData: ITrip = req.body;
 
     console.log(tripData);
-    const trip = await TripService.create(tripData);
+    const trip = await DriverTripService.create(tripData);
 
     sendResponse(res, {
       success: true,
@@ -24,7 +24,7 @@ export const TripController = {
   // Get trip by ID
   getById: async (req: Request, res: Response) => {
     const { id } = req.params;
-    const trip = await TripService.getById(id);
+    const trip = await DriverTripService.getById(id);
 
     sendResponse(res, {
       success: true,
@@ -36,7 +36,7 @@ export const TripController = {
 
   // Get all trips
   getAll: async (req: Request, res: Response) => {
-    const trips = await TripService.getAll();
+    const trips = await DriverTripService.getAll();
 
     sendResponse(res, {
       success: true,
@@ -53,7 +53,7 @@ export const TripController = {
     console.log(id, payload);
     if (!payload.status) throw ApiError.badRequest("Status is required");
 
-    const trip = await TripService.update(id, payload);
+    const trip = await DriverTripService.update(id, payload);
 
     sendResponse(res, {
       success: true,
@@ -66,7 +66,7 @@ export const TripController = {
   // Delete trip
   delete: async (req: Request, res: Response) => {
     const { id } = req.params;
-    const trip = await TripService.delete(id);
+    const trip = await DriverTripService.delete(id);
 
     sendResponse(res, {
       success: true,

@@ -1,6 +1,7 @@
 export enum USER_ROLES {
   STUDENT = "student",
   EMPLOYEE = "employee",
+  DRIVER = "driver",
   ADMIN = "admin",
   SUPER_ADMIN = "super_admin",
 }
@@ -18,7 +19,7 @@ export enum STUDENT_DENSITY {
 
 export enum TRIP_STATUS {
   SCHEDULED = "scheduled",
-  ONGOING = "ongoing",
+  DEPARTED = "departed",
   COMPLETED = "completed",
   CANCELED = "cancelled",
 }

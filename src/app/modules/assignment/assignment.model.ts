@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const scheduleAssignmentSchema = new Schema(
+const assignmentSchema = new Schema(
   {
     scheduleId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,6 +15,14 @@ const scheduleAssignmentSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    assignmentType: {
+      type: String,
+      enum: ["fixed", "one-off"],
+      default: "fixed",
+    },
+    specificDate: {
+      type: Date, // required only if one-off
+    },
     workingDays: [
       {
         type: String,
@@ -25,6 +33,6 @@ const scheduleAssignmentSchema = new Schema(
   { timestamps: true }
 );
 
-const ScheduleAssignmentModel = mongoose.model("ScheduleAssignment", scheduleAssignmentSchema);
+const AssignmentModel = mongoose.model("Assignment", assignmentSchema);
 
-export default ScheduleAssignmentModel;
+export default AssignmentModel;
