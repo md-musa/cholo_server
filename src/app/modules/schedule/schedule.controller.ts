@@ -39,6 +39,7 @@ export const ScheduleController = {
       data: { scheduleMode, operatingDays, schedules: result },
     });
   },
+  
   getScheduleForAdminByRoute: async (req: Request, res: Response) => {
     const { routeId } = req.params;
 

@@ -11,10 +11,12 @@ import { TripRouter } from "./app/modules/trip/trip.route";
 import { SOCKET_EVENTS } from "./enums";
 import { io } from "./server";
 import { ScheduleRouter } from "./app/modules/schedule/schedule.route";
-import { broadcastLocation } from "./app/socket/broadcast";
+import { handleLocationBroadcast } from "./app/socket/broadcast";
 import { ErrorLogRoute } from "./app/modules/errorLog/errorLog.route";
-import ScheduleAssignmentRoute from "./app/modules/assignment/assignment.route";
+import AssignmentRoute from "./app/modules/assignment/assignment.route";
 const app: Application = express();
+
+// ** these is an issue with socket.io
 
 app.use(cors());
 app.use(express.json());
@@ -37,7 +39,7 @@ app.use("/api/v1/routes", RouteRouter);
 app.use("/api/v1/trips", TripRouter);
 app.use("/api/v1/logs", ErrorLogRoute);
 app.use("/api/v1/schedules", ScheduleRouter);
-app.use("/api/v1/schedule-assignments", ScheduleAssignmentRoute);
+app.use("/api/v1/assignments", AssignmentRoute);
 app.use(globalErrorHandler);
 app.use(routeNotFoundError);
 // ---------------------------
@@ -55,7 +57,7 @@ export const socketHandler = (socket: any) => {
   });
 
   // 2️⃣ Bus broadcasts location updates along with user count and host name
-  socket.on(SOCKET_EVENTS.BROADCAST_BUS_LOCATION, broadcastLocation);
+  socket.on(SOCKET_EVENTS.BROADCAST_BUS_LOCATION, handleLocationBroadcast);
 
   // 3️⃣ User leaves the route-specific room
   socket.on("leave-room", (room: string) => {

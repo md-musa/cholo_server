@@ -33,7 +33,12 @@ export const groupAndSortSchedules = (schedules: ISchedule[]) => {
     groupedSchedules[directionKey][userTypeKey].push(schedule);
   }
 
-  const sortByTime = (a: ISchedule, b: ISchedule) => a.time.localeCompare(b.time);
+  const sortByTime = (a: ISchedule, b: ISchedule) => {
+    if (!a.time && !b.time) return 0; // both missing
+    if (!a.time) return 1; // push undefined to end
+    if (!b.time) return -1;
+    return a.time.localeCompare(b.time);
+  };
   Object.values(groupedSchedules).forEach((group) => {
     group.student.sort(sortByTime);
     group.employee.sort(sortByTime);

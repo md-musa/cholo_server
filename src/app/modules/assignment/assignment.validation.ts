@@ -14,7 +14,7 @@ const ScheduleAssignmentValidation = {
       driverId: z.string().optional(),
       workingDays: z.array(WeekDaysEnum).optional(),
       assignmentType: AssignmentTypeEnum.default("fixed"),
-      specificDate: z.date().optional(),
+      specificDate: z.coerce.date().optional(),
     }),
   }),
 

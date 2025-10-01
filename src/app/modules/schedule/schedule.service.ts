@@ -4,14 +4,15 @@ import ScheduleModel from "./schedule.model";
 import ApiError from "../../../errors/ApiError";
 import AssignmentModel from "../assignment/assignment.model";
 import moment from "moment";
-import { attachAssignmentsToSchedules, groupAndSortSchedules } from "./schedule.util";
 
 export const ScheduleService = {
   createSchedule: async (data: ISchedule) => {
-    return await ScheduleModel.create(data);
+    const schedule = await ScheduleModel.create(data);
+    return schedule;
   },
 
   getScheduleByRoute: async (routeId: string, scheduleMode: string, operatingDays: string) => {
+    // 1. Fetch schedules
     const schedules = await ScheduleModel.find({
       routeId,
       mode: scheduleMode,
@@ -19,6 +20,8 @@ export const ScheduleService = {
     });
 
     const scheduleIds = schedules.map((s) => s._id);
+
+    // 2. Fetch all assignments for these schedules (fixed + one-off for today)
     const todayStart = moment().startOf("day").toDate();
     const todayEnd = moment().endOf("day").toDate();
 
@@ -33,11 +36,49 @@ export const ScheduleService = {
       .populate("driverId", "name")
       .lean();
 
-    const schedulesWithAssignments = attachAssignmentsToSchedules(schedules, assignments);
-    return groupAndSortSchedules(schedulesWithAssignments);
+    // 3. Attach assignments to schedules
+    const scheduleMap = schedules.map((schedule) => {
+      const assignedBuses = assignments
+        .filter((a) => a.scheduleId.toString() === schedule._id.toString())
+        .map((a) => ({
+          busId: a.busId,
+          driverId: a.driverId,
+          workingDays: a.workingDays,
+          assignmentType: a.assignmentType,
+          specificDate: a.specificDate,
+        }));
+      return { ...schedule.toObject(), assignedBuses };
+    });
+
+    // 4. Group schedules by direction and user type
+    const groupedSchedules = {
+      from_campus: { student: [] as ISchedule[], employee: [] as ISchedule[] },
+      to_campus: { student: [] as ISchedule[], employee: [] as ISchedule[] },
+    };
+
+    for (const schedule of scheduleMap) {
+      const directionKey =
+        schedule.direction === SCHEDULE_DIRECTIONS.FROM_CAMPUS
+          ? SCHEDULE_DIRECTIONS.FROM_CAMPUS
+          : SCHEDULE_DIRECTIONS.TO_CAMPUS;
+      const userTypeKey =
+        schedule.userType === SCHEDULE_USER_TYPES.STUDENT ? SCHEDULE_USER_TYPES.STUDENT : SCHEDULE_USER_TYPES.EMPLOYEE;
+
+      groupedSchedules[directionKey][userTypeKey].push(schedule);
+    }
+
+    // 5. Sort by time
+    const sortByTime = (a: ISchedule, b: ISchedule) => a.time.localeCompare(b.time);
+    Object.values(groupedSchedules).forEach((group) => {
+      group.student.sort(sortByTime);
+      group.employee.sort(sortByTime);
+    });
+
+    return groupedSchedules;
   },
 
   getScheduleForAdminByRoute: async (routeId: string, scheduleMode: string) => {
+    // Same logic as getScheduleByRoute but without operatingDays filter
     const schedules = await ScheduleModel.find({
       routeId,
       mode: scheduleMode,
@@ -58,8 +99,42 @@ export const ScheduleService = {
       .populate("driverId", "name")
       .lean();
 
-    const schedulesWithAssignments = attachAssignmentsToSchedules(schedules, assignments);
-    return groupAndSortSchedules(schedulesWithAssignments);
+    const scheduleMap = schedules.map((schedule) => {
+      const assignedBuses = assignments
+        .filter((a) => a.scheduleId.toString() === schedule._id.toString())
+        .map((a) => ({
+          busId: a.busId,
+          driverId: a.driverId,
+          workingDays: a.workingDays,
+          assignmentType: a.assignmentType,
+          specificDate: a.specificDate,
+        }));
+      return { ...schedule.toObject(), assignedBuses };
+    });
+
+    const groupedSchedules = {
+      from_campus: { student: [] as ISchedule[], employee: [] as ISchedule[] },
+      to_campus: { student: [] as ISchedule[], employee: [] as ISchedule[] },
+    };
+
+    for (const schedule of scheduleMap) {
+      const directionKey =
+        schedule.direction === SCHEDULE_DIRECTIONS.FROM_CAMPUS
+          ? SCHEDULE_DIRECTIONS.FROM_CAMPUS
+          : SCHEDULE_DIRECTIONS.TO_CAMPUS;
+      const userTypeKey =
+        schedule.userType === SCHEDULE_USER_TYPES.STUDENT ? SCHEDULE_USER_TYPES.STUDENT : SCHEDULE_USER_TYPES.EMPLOYEE;
+
+      groupedSchedules[directionKey][userTypeKey].push(schedule);
+    }
+
+    const sortByTime = (a: ISchedule, b: ISchedule) => a.time.localeCompare(b.time);
+    Object.values(groupedSchedules).forEach((group) => {
+      group.student.sort(sortByTime);
+      group.employee.sort(sortByTime);
+    });
+
+    return groupedSchedules;
   },
 
   updateSchedule: async (id: string, data: ISchedule) => {
