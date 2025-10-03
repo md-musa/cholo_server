@@ -30,10 +30,6 @@ const userSchema = new Schema<IUser>(
     },
     houseCoords: {
       type: [Number],
-      validate: {
-        validator: (arr: number[]) => arr.length === 2,
-        message: "houseCoords must be [longitude, latitude]",
-      },
       required: false,
     },
     routeId: {

@@ -7,7 +7,7 @@ export const create = z.object({
       .string()
       .nonempty("Bus name is required")
       .transform((val) => (val ? val.toLowerCase().trim() : val)),
-    busType: z.nativeEnum(BUS_TYPES),
+    busType: z.nativeEnum(BUS_TYPES).optional(),
     capacity: z.number().int().positive("Capacity must be a positive integer").optional(),
     status: z.nativeEnum(BUS_STATUS).optional(),
     assignedRouteId: z.string().optional(),

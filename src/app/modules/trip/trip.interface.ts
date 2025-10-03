@@ -3,7 +3,7 @@ import { BUS_TYPES, TRIP_STATUS } from "../../../enums";
 
 export interface ITrip {
   assignmentId: Schema.Types.ObjectId;
-  status: TRIP_STATUS.SCHEDULED | TRIP_STATUS.ONGOING | TRIP_STATUS.COMPLETED | TRIP_STATUS.CANCELED;
+  status: TRIP_STATUS.SCHEDULED | TRIP_STATUS.DEPARTED | TRIP_STATUS.COMPLETED | TRIP_STATUS.CANCELED;
   startTime: Date;
   endTime?: Date;
   note?: string;
@@ -16,7 +16,7 @@ export interface IUserTrip {
   busName: string;
   departureTime?: Date;
   direction: string;
-  status: TRIP_STATUS.SCHEDULED | TRIP_STATUS.ONGOING | TRIP_STATUS.COMPLETED | TRIP_STATUS.CANCELED;
+  status: TRIP_STATUS.SCHEDULED | TRIP_STATUS.DEPARTED | TRIP_STATUS.COMPLETED | TRIP_STATUS.CANCELED;
   busType: BUS_TYPES.STUDENT | BUS_TYPES.EMPLOYEE;
   note?: string;
 }

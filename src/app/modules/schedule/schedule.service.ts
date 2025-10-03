@@ -1,9 +1,11 @@
+import { create } from "./../bus/bus.validation";
 import { SCHEDULE_DIRECTIONS, SCHEDULE_USER_TYPES } from "../../../enums";
 import { ISchedule } from "./schedule.interface";
 import ScheduleModel from "./schedule.model";
 import ApiError from "../../../errors/ApiError";
 import AssignmentModel from "../assignment/assignment.model";
 import moment from "moment";
+import { TripModel } from "../trip/trip.model";
 
 export const ScheduleService = {
   createSchedule: async (data: ISchedule) => {
@@ -12,7 +14,7 @@ export const ScheduleService = {
   },
 
   getScheduleByRoute: async (routeId: string, scheduleMode: string, operatingDays: string) => {
-    // 1. Fetch schedules
+    // 1. Fetch schedules for the route
     const schedules = await ScheduleModel.find({
       routeId,
       mode: scheduleMode,
@@ -21,10 +23,11 @@ export const ScheduleService = {
 
     const scheduleIds = schedules.map((s) => s._id);
 
-    // 2. Fetch all assignments for these schedules (fixed + one-off for today)
+    // 2. Prepare today's date range
     const todayStart = moment().startOf("day").toDate();
     const todayEnd = moment().endOf("day").toDate();
 
+    // 3. Fetch assignments (fixed + today's one-off)
     const assignments = await AssignmentModel.find({
       scheduleId: { $in: scheduleIds },
       $or: [
@@ -36,9 +39,26 @@ export const ScheduleService = {
       .populate("driverId", "name")
       .lean();
 
-    // 3. Attach assignments to schedules
+    const assignmentIds = assignments.map((a) => a._id);
+
+    // 4. Fetch today's trips for those assignments
+    const trips = await TripModel.find({
+      assignmentId: { $in: assignmentIds },
+      createdAt: { $gte: todayStart, $lte: todayEnd },
+    }).lean();
+
+    // 5. Create lookup map of trips by assignmentId
+    const tripMap = new Map(trips.map((t) => [t.assignmentId.toString(), t]));
+
+    // 6. Merge trips into assignments
+    const assignmentsWithTrips = assignments.map((a) => ({
+      ...a,
+      trip: tripMap.get(a._id.toString()) || null,
+    }));
+
+    // 7. Attach assignments to schedules
     const scheduleMap = schedules.map((schedule) => {
-      const assignedBuses = assignments
+      const assignedBuses = assignmentsWithTrips
         .filter((a) => a.scheduleId.toString() === schedule._id.toString())
         .map((a) => ({
           busId: a.busId,
@@ -46,11 +66,13 @@ export const ScheduleService = {
           workingDays: a.workingDays,
           assignmentType: a.assignmentType,
           specificDate: a.specificDate,
+          trip: a.trip, // include merged trip here
         }));
+
       return { ...schedule.toObject(), assignedBuses };
     });
 
-    // 4. Group schedules by direction and user type
+    // 8. Group schedules by direction & user type
     const groupedSchedules = {
       from_campus: { student: [] as ISchedule[], employee: [] as ISchedule[] },
       to_campus: { student: [] as ISchedule[], employee: [] as ISchedule[] },
@@ -61,14 +83,16 @@ export const ScheduleService = {
         schedule.direction === SCHEDULE_DIRECTIONS.FROM_CAMPUS
           ? SCHEDULE_DIRECTIONS.FROM_CAMPUS
           : SCHEDULE_DIRECTIONS.TO_CAMPUS;
+
       const userTypeKey =
         schedule.userType === SCHEDULE_USER_TYPES.STUDENT ? SCHEDULE_USER_TYPES.STUDENT : SCHEDULE_USER_TYPES.EMPLOYEE;
 
       groupedSchedules[directionKey][userTypeKey].push(schedule);
     }
 
-    // 5. Sort by time
+    // 9. Sort schedules by time
     const sortByTime = (a: ISchedule, b: ISchedule) => a.time.localeCompare(b.time);
+
     Object.values(groupedSchedules).forEach((group) => {
       group.student.sort(sortByTime);
       group.employee.sort(sortByTime);
@@ -103,6 +127,7 @@ export const ScheduleService = {
       const assignedBuses = assignments
         .filter((a) => a.scheduleId.toString() === schedule._id.toString())
         .map((a) => ({
+          _id: a._id,
           busId: a.busId,
           driverId: a.driverId,
           workingDays: a.workingDays,

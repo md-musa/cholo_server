@@ -101,8 +101,8 @@ export const ScheduleAssignmentService = {
         };
       })
       .sort((a, b) => {
-        const timeA = moment(a.scheduleId.time, "HH:mm");
-        const timeB = moment(b.scheduleId.time, "HH:mm");
+        const timeA = moment((a.scheduleId as any).time, "HH:mm");
+        const timeB = moment((b.scheduleId as any).time, "HH:mm");
         return timeA.diff(timeB);
       });
   },

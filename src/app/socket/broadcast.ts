@@ -2,7 +2,6 @@ import { LRUCache } from "lru-cache";
 import { SOCKET_EVENTS, USER_ROLES } from "../../enums";
 import { io } from "../../server";
 import { TripModel, UserTripModel } from "../modules/trip/trip.model";
-import type { Server } from "socket.io";
 import { updateTripSpeedAverage, getRoomUserCount, nowIso } from "./util";
 
 /**
@@ -41,8 +40,8 @@ export interface OutgoingLocationPayload {
 /**
  * Emit location payload to all clients subscribed to the route room.
  */
-function emitRouteLocationUpdate(ioServer: Server, routeId: string, payload: OutgoingLocationPayload) {
-  ioServer.to(routeId).emit(SOCKET_EVENTS.BUS_LOCATION_UPDATE, payload);
+function emitRouteLocationUpdate(routeId: string, payload: OutgoingLocationPayload) {
+  io.to(routeId).emit(SOCKET_EVENTS.BUS_LOCATION_UPDATE, payload);
   console.log(
     `📡 Broadcasted on route ${routeId} — bus=${payload.busName || "-"} avgSpeed=${payload.avgSpeed.toFixed(
       2
@@ -54,7 +53,7 @@ function emitRouteLocationUpdate(ioServer: Server, routeId: string, payload: Out
  * Handle location updates sent by passengers or other non-driver users.
  * Loads the user trip from cache/DB and broadcasts to the route room.
  */
-export async function handleUserLocationBroadcast(ioServer: Server, data: IncomingLocationPayload) {
+export async function handleUserLocationBroadcast(data: IncomingLocationPayload) {
   console.log("📍 User location update received:", data);
   const { tripId, latitude, longitude, heading, speed } = data;
 
@@ -74,7 +73,7 @@ export async function handleUserLocationBroadcast(ioServer: Server, data: Incomi
     const { routeId, busName, direction, busType } = trip;
 
     const avgSpeed = updateTripSpeedAverage(tripId, speed) ?? 0;
-    const currUserCnt = getRoomUserCount(ioServer, routeId.toString());
+    const currUserCnt = getRoomUserCount(io, routeId.toString());
     const timestamp = nowIso();
 
     const outgoing: OutgoingLocationPayload = {
@@ -92,7 +91,7 @@ export async function handleUserLocationBroadcast(ioServer: Server, data: Incomi
       timestamp,
     };
 
-    emitRouteLocationUpdate(ioServer, routeId.toString(), outgoing);
+    emitRouteLocationUpdate(routeId.toString(), outgoing);
   } catch (err) {
     console.error("❌ Error in handleUserLocationBroadcast:", err);
   }
@@ -101,7 +100,7 @@ export async function handleUserLocationBroadcast(ioServer: Server, data: Incomi
 /**
  * Handle location updates sent by drivers. Trip document includes assignment and bus details.
  */
-export async function handleDriverLocationBroadcast(ioServer: Server, data: IncomingLocationPayload) {
+export async function handleDriverLocationBroadcast(data: IncomingLocationPayload) {
   console.log("📍 Driver location update received:", data);
   const { tripId, latitude, longitude, heading, speed } = data;
 
@@ -134,7 +133,7 @@ export async function handleDriverLocationBroadcast(ioServer: Server, data: Inco
     const userType = trip.assignmentId?.scheduleId?.userType;
 
     const avgSpeed = updateTripSpeedAverage(tripId, speed) ?? 0;
-    const currUserCnt = getRoomUserCount(ioServer, routeId);
+    const currUserCnt = getRoomUserCount(io, routeId);
     const timestamp = nowIso();
 
     const outgoing: OutgoingLocationPayload = {
@@ -151,7 +150,7 @@ export async function handleDriverLocationBroadcast(ioServer: Server, data: Inco
       timestamp,
     };
 
-    emitRouteLocationUpdate(ioServer, routeId, outgoing);
+    emitRouteLocationUpdate(routeId, outgoing);
   } catch (err) {
     console.error("❌ Error in handleDriverLocationBroadcast:", err);
   }
@@ -161,10 +160,11 @@ export async function handleDriverLocationBroadcast(ioServer: Server, data: Inco
  * Public entry point for broadcasting location updates. Decides which handler to call
  * based on broadcaster type.
  */
-export async function handleLocationBroadcast(ioServer: Server, data: IncomingLocationPayload) {
+export async function handleLocationBroadcast(data: IncomingLocationPayload) {
+  console.log("🚦 Location broadcast received:", data);
   if (data.broadcaster === "user") {
-    return handleUserLocationBroadcast(ioServer, data);
+    return handleUserLocationBroadcast(data);
   }
 
-  return handleDriverLocationBroadcast(ioServer, data);
+  return handleDriverLocationBroadcast(data);
 }

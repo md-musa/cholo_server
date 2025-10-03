@@ -7,8 +7,11 @@ const getBuses = async (): Promise<IBus[]> => {
 };
 
 const createBus = async (busInfo: IBus): Promise<IBus> => {
-  const bus = await BusModel.create(busInfo);
-  return bus;
+  const bus = await BusModel.findOne({ name: busInfo.name });
+  if (bus) {
+    throw ApiError.conflict("Bus with this name already exists");
+  }
+  return await BusModel.create(busInfo);
 };
 
 const updateBus = async (busId: string, busInfo: Partial<IBus>): Promise<IBus> => {

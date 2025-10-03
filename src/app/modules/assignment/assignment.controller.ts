@@ -25,6 +25,7 @@ export const ScheduleAssignmentController = {
   },
 
   update: async (req: Request, res: Response) => {
+    console.log("Updating assignment with data:", req.body);
     const updated = await ScheduleAssignmentService.update(req.params.id, req.body);
     sendResponse(res, {
       statusCode: 200,
