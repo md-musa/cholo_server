@@ -134,8 +134,12 @@ const getSingleUserData = async (userId: string) => {
 
   return user;
 };
+
 const getAllDrivers = async () => {
   return await UserModel.find({ role: "driver" });
 };
+const deleteUserById = async (id: string) => {
+  return await UserModel.findByIdAndDelete(id);
+};
 
-export const AuthService = { registerUser, login, getSingleUserData, refreshToken, getAllDrivers };
+export const AuthService = { registerUser, login, getSingleUserData, refreshToken, getAllDrivers, deleteUserById };

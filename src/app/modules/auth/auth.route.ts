@@ -10,6 +10,7 @@ router.post("/login", validateRequest(AuthValidation.login), AuthController.logi
 router.post("/refresh-token", AuthController.refreshToken);
 router.get("/user", AuthController.getSingleUserData)
 router.get("/drivers", AuthController.getAllDrivers)
+router.delete("/delete/:id", AuthController.deleteUserById)
 
 export const AuthRouter = router;
  

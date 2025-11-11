@@ -74,10 +74,23 @@ const getAllDrivers = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
+const deleteUserById = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const user = await AuthService.deleteUserById(id);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "User account deleted successfully",
+    data: user,
+  });
+};
+
 export const AuthController = {
   registerUser,
   login,
   refreshToken,
   getSingleUserData,
-  getAllDrivers
+  getAllDrivers,
+  deleteUserById,
 };

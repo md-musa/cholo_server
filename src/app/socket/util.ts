@@ -11,7 +11,6 @@ export interface TripSpeedData {
 
 export const tripSpeedCache = new LRUCache<string, TripSpeedData>({
   max: 100,
-  ttl: 1000 * 60 * 30, // 30 minutes
 });
 
 /**

@@ -11,7 +11,7 @@ import { TripRouter } from "./app/modules/trip/trip.route";
 import { SOCKET_EVENTS } from "./enums";
 import { io } from "./server";
 import { ScheduleRouter } from "./app/modules/schedule/schedule.route";
-import { handleLocationBroadcast } from "./app/socket/broadcast";
+import { handleLocationBroadcast, handleRouteJoin } from "./app/socket/broadcast";
 import { ErrorLogRoute } from "./app/modules/errorLog/errorLog.route";
 import AssignmentRoute from "./app/modules/assignment/assignment.route";
 const app: Application = express();
@@ -51,13 +51,13 @@ export const socketHandler = (socket: any) => {
 
   // 1️⃣ User joins a route-specific room
   socket.on(SOCKET_EVENTS.JOIN_ROUTE, (routeId: string) => {
-    socket.join(routeId);
-    const currUserCnt = io.sockets.adapter.rooms.get(routeId)?.size;
-    console.log(`➕ Client ${socket.id} joined; cnt: ${currUserCnt}`);
+    handleRouteJoin(socket, routeId);
   });
 
   // 2️⃣ Bus broadcasts location updates along with user count and host name
-  socket.on(SOCKET_EVENTS.BROADCAST_BUS_LOCATION, handleLocationBroadcast);
+  socket.on(SOCKET_EVENTS.BROADCAST_BUS_LOCATION, (data: any) => {
+    handleLocationBroadcast(socket, data);
+  });
 
   // 3️⃣ User leaves the route-specific room
   socket.on("leave-room", (room: string) => {
