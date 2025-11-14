@@ -34,6 +34,7 @@ export interface OutgoingLocationPayload {
   speed?: number;
   avgSpeed: number;
   currUserCnt: number;
+  hostName?: string;
   timestamp: string;
 }
 
@@ -48,16 +49,16 @@ export async function handleUserLocationBroadcast(socket: any, data: IncomingLoc
     let trip = tripCache.get(tripId);
 
     if (!trip) {
-      trip = await UserTripModel.findById(tripId).lean();
+      trip = await UserTripModel.findById(tripId).populate("hostId", "name").lean();
       if (!trip) {
         console.warn("❌ UserTrip not found for id:", tripId);
         return;
       }
       tripCache.set(tripId, trip);
-      console.log("✅ Cached UserTrip:", trip);
     }
+    console.log("✅ Cached UserTrip:", trip);
 
-    const { routeId, busName, direction, busType } = trip;
+    const { routeId, busName, direction, busType, hostId } = trip;
 
     const avgSpeed = updateTripSpeedAverage(tripId, speed) ?? 0;
     const currUserCnt = getRoomUserCount(io, routeId.toString());
@@ -75,6 +76,7 @@ export async function handleUserLocationBroadcast(socket: any, data: IncomingLoc
       speed,
       avgSpeed,
       currUserCnt,
+      hostName: hostId?.name,
       timestamp,
     };
 
