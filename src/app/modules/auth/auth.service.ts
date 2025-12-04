@@ -91,7 +91,7 @@ const refreshToken = async (token: string) => {
   }
 
   let decoded;
-  console.log("Decoded token", token);
+ // console.log("Decoded token", token);
   try {
     decoded = jwt.verify(token, REFRESH_TOKEN_SECRET) as {
       _id: string;
@@ -102,11 +102,11 @@ const refreshToken = async (token: string) => {
     // Token expired or invalid
     throw ApiError.unauthorized("INVALID_REFRESH_TOKEN");
   }
-  console.log(new Date(decoded.iat * 1000).toLocaleString());
+  //console.log(new Date(decoded.iat * 1000).toLocaleString());
   // Example output: "Mon, 21 Feb 2025 11:45:53 GMT"
 
-  console.log(new Date(decoded.exp * 1000).toLocaleString());
-  console.log("Decoded token", decoded);
+  //console.log(new Date(decoded.exp * 1000).toLocaleString());
+  //console.log("Decoded token", decoded);
   const user = await UserModel.findById(decoded._id).populate("routeId");
   if (!user) throw ApiError.notFound("There is no account with this id");
 
@@ -127,9 +127,9 @@ const refreshToken = async (token: string) => {
 };
 
 const getSingleUserData = async (userId: string) => {
-  console.log(userId);
+ // console.log(userId);
   const user = await UserModel.findById(userId);
-  console.log(user);
+ // console.log(user);
   if (!user) throw ApiError.notFound("User not found");
 
   return user;

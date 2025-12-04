@@ -56,7 +56,7 @@ export async function handleUserLocationBroadcast(socket: any, data: IncomingLoc
       }
       tripCache.set(tripId, trip);
     }
-    console.log("✅ Cached UserTrip:", trip);
+   // console.log("✅ Cached UserTrip:", trip);
 
     const { routeId, busName, direction, busType, hostId } = trip;
 
@@ -164,8 +164,8 @@ export async function handleRouteJoin(socket: any, routeId: string) {
   const currUserCnt = getRoomUserCount(io, routeId);
 
   const activeTripsFromCache = getRecentlyUpdatedTrips(activeTripsCache, routeId);
-  console.log("🟢 Active trips from cache:", activeTripsFromCache);
+  //console.log("🟢 Active trips from cache:", activeTripsFromCache);
   socket.emit(SOCKET_EVENTS.BUS_LOCATION_UPDATE, activeTripsFromCache);
 
-  console.log(`➕ Client ${socket.id} joined route ${routeId}; cnt: ${currUserCnt}`);
+  //console.log(`➕ Client ${socket.id} joined route ${routeId}; cnt: ${currUserCnt}`);
 }

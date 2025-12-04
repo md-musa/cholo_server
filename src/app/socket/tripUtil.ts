@@ -30,5 +30,5 @@ export function getRecentlyUpdatedTrips(cache: LRUCache<string, any>, routeId: s
 let cnt = 0;
 export function emitRouteLocationUpdate(socket: any, routeId: string, payload: OutgoingLocationPayload) {
   io.to(routeId).emit(SOCKET_EVENTS.BUS_LOCATION_UPDATE, payload);
-  console.log(`📡 Broadcasted [${++cnt}]`, payload);
+  //console.log(`📡 Broadcasted [${++cnt}]`, payload);
 }

@@ -10,7 +10,7 @@ export const DriverTripController = {
   create: async (req: Request, res: Response) => {
     const tripData: ITrip = req.body;
 
-    console.log(tripData);
+    //console.log(tripData);
     const trip = await DriverTripService.create(tripData);
 
     sendResponse(res, {
@@ -50,7 +50,7 @@ export const DriverTripController = {
   update: async (req: Request, res: Response) => {
     const { id } = req.params;
     const payload: Partial<ITrip> = req.body;
-    console.log(id, payload);
+    //console.log(id, payload);
     if (!payload.status) throw ApiError.badRequest("Status is required");
 
     const trip = await DriverTripService.update(id, payload);
@@ -79,9 +79,9 @@ export const DriverTripController = {
 
 export const UserTripController = {
   create: async (req: Request, res: Response) => {
-    console.log(req.body);
+   // console.log(req.body);
     const tripData = req.body;
-    console.log(tripData);
+   // console.log(tripData);
     const trip = await UserTripService.create(tripData);
 
     sendResponse(res, {

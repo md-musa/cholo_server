@@ -33,13 +33,13 @@ const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 const refreshToken = async (req: Request, res: Response): Promise<void> => {
-  console.log("refreshToken--------------\n [refresh()]", req.cookies);
+  //console.log("refreshToken--------------\n [refresh()]", req.cookies);
   const { refreshToken } = req.cookies;
   const { accessToken, newRefreshToken } = await AuthService.refreshToken(refreshToken);
   res.cookie("refreshToken", newRefreshToken);
 
-  console.log("accessToken", accessToken);
-  console.log("newRefreshToken", newRefreshToken);
+  //console.log("accessToken", accessToken);
+  //console.log("newRefreshToken", newRefreshToken);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -50,8 +50,8 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
 };
 
 const getSingleUserData = async (req: Request, res: Response): Promise<void> => {
-  console.log(req.params);
-  console.log(req.query);
+  //console.log(req.params);
+  //console.log(req.query);
   const { userId } = req.query;
   const user = await AuthService.getSingleUserData(userId as string);
 

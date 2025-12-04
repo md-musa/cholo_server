@@ -11,7 +11,7 @@ const auth =
     try {
       //get authorization token
       const token = req.headers.authorization;
-      console.log("token", token);
+     // console.log("token", token);
       if (!token) {
         throw new ApiError(StatusCodes.UNAUTHORIZED, "You are not authorized");
       }
@@ -26,10 +26,10 @@ const auth =
       }
 
       req.user = verifiedUser; // role  , userid
-      console.log("verifiedUser", verifiedUser);
+      //console.log("verifiedUser", verifiedUser);
       // print issue time and expiration time
-      console.log(new Date(verifiedUser.iat * 1000));
-      console.log(new Date(verifiedUser.exp * 1000));
+     // console.log(new Date(verifiedUser.iat * 1000));
+      //console.log(new Date(verifiedUser.exp * 1000));
 
       // role diye guard korar jnno
       if (requiredRoles.length && !requiredRoles.includes(verifiedUser.role)) {

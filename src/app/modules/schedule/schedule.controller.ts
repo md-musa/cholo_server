@@ -31,7 +31,7 @@ export const ScheduleController = {
 
     const scheduleMode = config.APP_VARIABLES.SCHEDULE_MODE;
     const result = await ScheduleService.getScheduleByRoute(routeId as string, scheduleMode, operatingDays as string);
-    console.log(result);
+   // console.log(result);
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
@@ -49,7 +49,7 @@ export const ScheduleController = {
 
     const scheduleMode = config.APP_VARIABLES.SCHEDULE_MODE;
     const result = await ScheduleService.getScheduleForAdminByRoute(routeId as string, scheduleMode);
-    console.log(result);
+    //console.log(result);
     sendResponse(res, {
       statusCode: StatusCodes.OK,
       success: true,
